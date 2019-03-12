@@ -16,12 +16,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
+import com.xia.adgis.Main.Bean.AD;
 import com.xia.adgis.Main.Fragment.ADsCompanyFragment;
 import com.xia.adgis.Main.Fragment.ADsMaintainFragment;
 import com.xia.adgis.Main.Fragment.ADsMessageFragment;
@@ -37,9 +39,13 @@ import com.xia.imagewatch.RolloutPreviewActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 public class ADsDetailActivity extends AppCompatActivity {
 
@@ -61,6 +67,12 @@ public class ADsDetailActivity extends AppCompatActivity {
     View buttonBar;
     @BindView(R.id.detailTitle)
     TextView title;
+    @BindView(R.id.detail_name)
+    TextView detailName;
+    @BindView(R.id.detail_brief)
+    TextView detailBiref;
+    @BindView(R.id.last_edit_time)
+    TextView lastTime;
     private int mScrollY = 0;
     //图片浏览相关
     private ArrayList<RolloutInfo> data = new ArrayList<>();
@@ -69,9 +81,9 @@ public class ADsDetailActivity extends AppCompatActivity {
     private String imageID;
     //碎片
     ADsPhysicalFragment aDsPhysicalFragment;
-    ADsMessageFragment aDsMessageFragment;
     ADsCompanyFragment aDsCompanyFragment;
     ADsMaintainFragment aDsMaintainFragment;
+    ADsMessageFragment aDsMessageFragment;
     //定义要装fragment的列表
     private ArrayList<Fragment> list_fragment=new ArrayList<Fragment>();
     //tablayout的标题
@@ -104,16 +116,16 @@ public class ADsDetailActivity extends AppCompatActivity {
         aDsCompanyFragment = new ADsCompanyFragment();
         aDsMaintainFragment = new ADsMaintainFragment();
         //添加碎片
-        list_fragment.add(aDsMessageFragment);
         list_fragment.add(aDsPhysicalFragment);
         list_fragment.add(aDsCompanyFragment);
         list_fragment.add(aDsMaintainFragment);
+        list_fragment.add(aDsMessageFragment);
         //添加标题
         list_title.add("文字内容");
         list_title.add("物理信息");
         list_title.add("公司信息");
         list_title.add("维护信息");
-        //tablayout与viewpager逻辑
+        //tablelayout与viewpager逻辑
         adapter = new TabAdapter(getSupportFragmentManager());
         //TabLayout与ViewPager关联
         //ViewPager滑动关联TabLayout
@@ -169,8 +181,23 @@ public class ADsDetailActivity extends AppCompatActivity {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                         super.onResourceReady(resource, animation);
-                        progressDialog.dismiss();
-                        ProgressInterceptor.removeListener(imageID);
+                        BmobQuery<AD> temple = new BmobQuery<>();
+                        temple.addWhereEqualTo("imageID",imageID);
+                        temple.findObjects(new FindListener<AD>() {
+                            @Override
+                            public void done(List<AD> list, BmobException e) {
+                                if (e == null){
+                                    detailName.setText(list.get(list.size() - 1).getName());
+                                    detailBiref.setText(list.get(list.size() - 1).getBrief());
+                                    String last = getString(R.string.front) + list.get(list.size() - 1).getUpdatedAt();
+                                    lastTime.setText(last);
+                                    progressDialog.dismiss();
+                                    ProgressInterceptor.removeListener(imageID);
+                                }else{
+                                    Toast.makeText(ADsDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
                 });
         //初始化图像
@@ -201,7 +228,6 @@ public class ADsDetailActivity extends AppCompatActivity {
         imageInfo = new RolloutInfo();
         imageInfo.width = 1440;
         imageInfo.height = 1600;
-
         imageInfo.url = imageID;
         data.add(imageInfo);
     }

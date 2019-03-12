@@ -11,8 +11,6 @@ import com.xia.adgis.R;
 
 public class ADsCompanyFragment extends Fragment {
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

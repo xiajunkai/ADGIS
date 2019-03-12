@@ -1,8 +1,6 @@
 package com.xia.adgis.Main.Activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -17,9 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.example.swipeback.ISwipeBackActivity;
 import com.example.swipeback.SwipeBackActivityImpl;
-import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
@@ -35,10 +31,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FetchUserInfoListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserCentreActivity extends SwipeBackActivityImpl {
@@ -94,41 +87,33 @@ public class UserCentreActivity extends SwipeBackActivityImpl {
         StatusBarUtil.setPaddingSmart(this, toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        initUserData();
         refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
         refreshLayout.autoRefresh();
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(final RefreshLayout refreshLayout) {
-                BmobUser.fetchUserJsonInfo(new FetchUserInfoListener<String>() {
-                    @Override
-                    public void done(String s, BmobException e) {
-                        if(e == null){
-                            Gson gson = new Gson();
-                            user = gson.fromJson(s,User.class);
-                            userNickname.setText(user.getNickName());
-                            userMoto.setText(user.getMotto());
-                            userName.setText(user.getUsername());
-                            userMail.setText(user.getEmail());
-                            userPhone.setText(user.getMobilePhoneNumber());
-                            userSex.setText(user.getSex());
-                            userBrithday.setText(user.getBirthday());
-                            userArea.setText(user.getAddress());
-                            Title.setText(user.getNickName());
-                            Glide.with(UserCentreActivity.this).
-                                    load(user.getUserIcon()).
-                                    into(new GlideDrawableImageViewTarget(avatar){
-
-                                        @Override
-                                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                            super.onResourceReady(resource, animation);
-                                            refreshLayout.finishRefresh();
-                                        }
-                                    });
-                        }
-                    }
-                });
-
-                    }
+                user = BmobUser.getCurrentUser(User.class);
+                //头像加载
+                userNickname.setText(user.getNickName());
+                userMoto.setText(user.getMotto());
+                userName.setText(user.getUsername());
+                userMail.setText(user.getEmail());
+                userPhone.setText(user.getMobilePhoneNumber());
+                userSex.setText(user.getSex());
+                userBrithday.setText(user.getBirthday());
+                userArea.setText(user.getAddress());
+                Title.setText(user.getNickName());
+                Glide.with(UserCentreActivity.this).
+                        load(user.getUserIcon()).
+                        into(new GlideDrawableImageViewTarget(avatar){
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                super.onResourceReady(resource, animation);
+                                refreshLayout.finishRefresh();
+                            }
+                        });
+            }
         });
         //上下滑动效果
         refreshLayout.setOnMultiPurposeListener(new SimpleMultiPurposeListener() {
@@ -163,7 +148,6 @@ public class UserCentreActivity extends SwipeBackActivityImpl {
         });
         buttonBar.setAlpha(0);
         toolbar.setBackgroundColor(0);
-        initUserData();
         //查看图片
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,9 +171,6 @@ public class UserCentreActivity extends SwipeBackActivityImpl {
 
     private void initUserData(){
         //头像加载
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(true);
-        progressDialog.setMessage("加载中");
         Glide.with(this).
                 load(user.getUserIcon()).
                 into(avatar);

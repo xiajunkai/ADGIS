@@ -285,6 +285,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                     public void onNext(List<AD> ads) {
                         bmobData = ads;
                         addMarksToMap(ads);
+                        //是否记忆位置
                         boolean isMemory = settingPreferences.getBoolean("preference_history",true);
                         isMemoryLocation(isMemory);
                     }
@@ -311,7 +312,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         mAMap.setMapType(MAP_TYPE);
         mUiSettings.setRotateGesturesEnabled(isRound);
     }
-
 
     //初始化并设置地图
     private void initMapSetting(){
@@ -371,10 +371,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                 if (aMapLocation != null) {
                     if (aMapLocation.getErrorCode() == 0) {
                         //定位成功回调信息，设置相关消息
-
                         //取出经纬度
                         LatLng latLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-
                         //添加Marker显示定位位置
                         if (locationMarker == null) {
                             //如果是空的添加一个新的,icon方法就是设置定位图标，可以自定义
@@ -392,7 +390,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                         }
 
                         //然后可以移动到定位点,使用animateCamera就有动画效果
-                        //mAMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
                         mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                 latLng, 15, 45, 0)),500,null);
                     } else {
@@ -522,7 +519,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         startPoint.offset(0, -100);
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);
         final long duration = 1500;
-
         final Interpolator interpolator = new BounceInterpolator();
         handler.post(new Runnable() {
             @Override
@@ -662,7 +658,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,SearchActivity.class);
-                intent.putExtra("data",(Serializable) bmobData);
                 startActivityForResult(intent,SEARCH);
             }
         });
@@ -875,7 +870,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                 }
                             }
                         })
-                        .showAsDropDown(popDetail,-335,-25)
+                        .showAsDropDown(popDetail,-250,-25)
                 .dimBackground(false);
             }
         });
@@ -1009,7 +1004,35 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                 break;
             case USER_CENTRE :
                 if(resultCode == RESULT_OK){
-                    BmobUser.fetchUserJsonInfo(new FetchUserInfoListener<String>() {
+                    user = BmobUser.getCurrentUser(User.class);
+                    Glide.with(MainActivity.this)
+                            .load(user.getUserIcon())
+                            .into(new GlideDrawableImageViewTarget(mCircleImageView) {
+                                @Override
+                                public void onLoadStarted(Drawable placeholder) {
+                                    super.onLoadStarted(placeholder);
+                                    progressDialog.show();
+                                }
+
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                    super.onResourceReady(resource, animation);
+                                    Glide.with(MainActivity.this)
+                                            .load(user.getUserIcon())
+                                            .into(new GlideDrawableImageViewTarget(icon){
+                                                @Override
+                                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                                    super.onResourceReady(resource, animation);
+                                                    progressDialog.dismiss();
+                                                }
+                                            });
+                                }
+                            });
+                    //用户邮箱
+                    usermail.setText(user.getEmail());
+                }
+
+                    /*BmobUser.fetchUserJsonInfo(new FetchUserInfoListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
                             if (e == null) {
@@ -1036,8 +1059,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                             }
 
                         }
-                    });
-                }
+                    });*/
+
         }
     }
 

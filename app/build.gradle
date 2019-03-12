@@ -70,7 +70,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     //Bmob云SDK
-    compile 'cn.bmob.android:bmob-sdk:3.5.7'
+    compile 'cn.bmob.android:bmob-sdk:3.6.0'
     //PhotoView(可对图片进行缩放)
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
     //简易实现圆角矩形背景

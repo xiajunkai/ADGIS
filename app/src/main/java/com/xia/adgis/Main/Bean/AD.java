@@ -10,12 +10,14 @@ import cn.bmob.v3.BmobObject;
  */
 
 public class AD extends BmobObject implements Serializable {
-
+    //纬度
     private double latitude;
+    //经度
     private double longitude;
     private String name;
     private String imageID;
-
+    //简介
+    private String brief;
 
     public double getLatitude() {
         return latitude;
@@ -47,5 +49,13 @@ public class AD extends BmobObject implements Serializable {
 
     public void setImageID(String imageID) {
         this.imageID = imageID;
+    }
+
+    public String getBrief() {
+        return brief;
+    }
+
+    public void setBrief(String brief) {
+        this.brief = brief;
     }
 }

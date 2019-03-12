@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by xiati on 2018/1/12.
- */
-
 public class UserSqliteHelper extends SQLiteOpenHelper {
     public UserSqliteHelper(Context context) {
         super(context, "user.db", null, 1);

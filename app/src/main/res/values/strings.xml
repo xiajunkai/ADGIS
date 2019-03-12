@@ -3,7 +3,7 @@
 
     <string name="action_sign_in_short">Sign in</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
-
+    <string name="front"> 最近更新时间：</string>
     <string-array name="pref_chose_map_types">
         <item>普通地图</item>
         <item>卫星地图</item>

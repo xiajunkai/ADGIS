@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.widget.ArrayAdapter;
 import android.content.Context;
@@ -17,10 +18,6 @@ import com.xia.adgis.R;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
-/**
- * Created by xiati on 2018/1/13.
- */
-
 public class UserNameHistoryAdapter extends ArrayAdapter<String> {
 
     private int resourceId;
@@ -33,8 +30,9 @@ public class UserNameHistoryAdapter extends ArrayAdapter<String> {
         list = objects;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         final String temp = getItem(position);
 
         View view;

@@ -198,7 +198,6 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
                 lvTips.setVisibility(GONE);
                 llSearchEmpty.setVisibility(GONE);
             }
-
         }
 
         @Override

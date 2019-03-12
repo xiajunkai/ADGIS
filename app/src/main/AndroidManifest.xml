@@ -38,7 +38,7 @@
         <!-- 高德的key -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="46cd8da4d28bf23bfadc0e73978418e2" />
+            android:value="1e127dfe81d2fa752b0a8b0219b130f7" />
         <!-- 使用okhttp替换Glide底部的加载方法 -->
         <meta-data
             android:name="com.xia.adgis.Utils.GlideProgress.ProgressGlideModule"

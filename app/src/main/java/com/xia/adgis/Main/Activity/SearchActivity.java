@@ -27,6 +27,9 @@ import com.xia.adgis.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import rx.Subscriber;
+
 @SuppressWarnings("unchecked")
 public class SearchActivity extends SwipeBackActivityImpl implements SearchView.SearchViewListener {
 
@@ -140,23 +143,47 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
     }
 
     /**
-     * 获取db 数据
+     * 获取db 数据(若先存在缓存，则从缓存中抓取)
      */
     private void getDbData() {
-        //传递过来数据
-        List<AD> temps = (List<AD>) getIntent().getSerializableExtra("data");
-        dbData = new ArrayList<>(temps.size());
-        for(int i = 0; i < temps.size(); i ++){
-            SearchItem temp = new SearchItem();
-            temp.title = temps.get(i).getName();
-            temp.url = temps.get(i).getImageID();
-            temp.content = "待完善";
-            temp.width = 1400;
-            temp.height = 1400;
-            temp.latitude = temps.get(i).getLatitude();
-            temp.longitude = temps.get(i).getLongitude();
-            dbData.add(temp);
+        //
+        //使用Bmob获取用来标记的信息
+        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+        //先判断是否有缓存
+        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
+        if(isCache){
+            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
+        }else{
+            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
         }
+        adBmobQuery.findObjectsObservable(AD.class)
+                .subscribe(new Subscriber<List<AD>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Toast.makeText(SearchActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(List<AD> ads) {
+                        dbData = new ArrayList<>(ads.size());
+                        for (int i = 0; i < ads.size(); i++) {
+                            SearchItem temp = new SearchItem();
+                            temp.title = ads.get(i).getName();
+                            temp.url = ads.get(i).getImageID();
+                            temp.content = "待完善";
+                            temp.width = 1400;
+                            temp.height = 1400;
+                            temp.latitude = ads.get(i).getLatitude();
+                            temp.longitude = ads.get(i).getLongitude();
+                            dbData.add(temp);
+                        }
+                    }
+                });
     }
 
     /**
@@ -170,10 +197,10 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
         try {
             String sql = "select * from history";
             Cursor cursor = database.rawQuery(sql,null);
-            cursor.close();
             while (cursor.moveToNext()){
                 hintData.add(cursor.getString(cursor.getColumnIndex("name")));
             }
+            cursor.close();
         }catch (Exception e){
             Toast.makeText(this, e.getMessage() , Toast.LENGTH_SHORT).show();
         }
