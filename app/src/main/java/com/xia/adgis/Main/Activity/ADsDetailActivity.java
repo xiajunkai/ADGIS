@@ -1,18 +1,24 @@
 package com.xia.adgis.Main.Activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,12 +29,15 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
+import com.xia.adgis.Main.Adapter.DragDetailFragmentPagerAdapter;
 import com.xia.adgis.Main.Bean.AD;
+import com.xia.adgis.Main.Bean.Messages;
 import com.xia.adgis.Main.Fragment.ADsCompanyFragment;
 import com.xia.adgis.Main.Fragment.ADsMaintainFragment;
 import com.xia.adgis.Main.Fragment.ADsMessageFragment;
 import com.xia.adgis.Main.Fragment.ADsPhysicalFragment;
 import com.xia.adgis.Main.Tool.StatusBarUtil;
+import com.xia.adgis.Register.Bean.User;
 import com.xia.adgis.Utils.DragScrollDetailsLayout;
 import com.xia.adgis.R;
 import com.xia.imagewatch.GlideProgress.ProgressInterceptor;
@@ -44,8 +53,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 public class ADsDetailActivity extends AppCompatActivity {
 
@@ -78,7 +89,7 @@ public class ADsDetailActivity extends AppCompatActivity {
     private ArrayList<RolloutInfo> data = new ArrayList<>();
     protected RolloutBDInfo bdInfo;
     protected RolloutInfo imageInfo;
-    private String imageID;
+    private  String imageID;
     //碎片
     ADsPhysicalFragment aDsPhysicalFragment;
     ADsCompanyFragment aDsCompanyFragment;
@@ -90,19 +101,23 @@ public class ADsDetailActivity extends AppCompatActivity {
     private ArrayList<String> list_title=new ArrayList<>();
     //viewpager与tablayout共用适配器
     TabAdapter adapter;
+    //当前查看广告牌名称
+    private String adsName;
+    //当前留言用户
+    User user;
+    //留言是否成功
+    boolean isSuccess = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ads_detail);
         ButterKnife.bind(this);
-        title.setText("广告牌详细信息");
+        //获取当前广告牌名称
+        adsName = getIntent().getStringExtra("data");
+        title.setText(adsName);
         //toolbar
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
         //沉浸模式
         StatusBarUtil.immersive(this, true);
         StatusBarUtil.setPaddingSmart(this,toolbar);
@@ -111,20 +126,21 @@ public class ADsDetailActivity extends AppCompatActivity {
         buttonBar.setAlpha(0);
         toolbar.setBackgroundColor(0);
         //碎片初始化
-        aDsPhysicalFragment = new ADsPhysicalFragment();
-        aDsMessageFragment = new ADsMessageFragment();
         aDsCompanyFragment = new ADsCompanyFragment();
+        aDsMessageFragment = new ADsMessageFragment();
+        aDsPhysicalFragment = new ADsPhysicalFragment();
         aDsMaintainFragment = new ADsMaintainFragment();
         //添加碎片
-        list_fragment.add(aDsPhysicalFragment);
         list_fragment.add(aDsCompanyFragment);
-        list_fragment.add(aDsMaintainFragment);
         list_fragment.add(aDsMessageFragment);
+        list_fragment.add(aDsPhysicalFragment);
+        list_fragment.add(aDsMaintainFragment);
         //添加标题
-        list_title.add("文字内容");
-        list_title.add("物理信息");
         list_title.add("公司信息");
+        list_title.add("留言");
+        list_title.add("物理内容");
         list_title.add("维护信息");
+
         //tablelayout与viewpager逻辑
         adapter = new TabAdapter(getSupportFragmentManager());
         //TabLayout与ViewPager关联
@@ -157,51 +173,53 @@ public class ADsDetailActivity extends AppCompatActivity {
                 lastScrollY = scrollY;
             }
         });
+        toolbar.setBackgroundColor(0);
         //加载
-        imageID = getIntent().getStringExtra("data");
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("加载中");
-        ProgressInterceptor.addListener(imageID, new ProgressListener() {
+        BmobQuery<AD> temple = new BmobQuery<>();
+        temple.addWhereEqualTo("name",adsName);
+        temple.findObjects(new FindListener<AD>() {
             @Override
-            public void onProgress(int progress) {
-                progressDialog.setProgress(progress);
+            public void done(List<AD> list, BmobException e) {
+                if (e == null){
+                    detailName.setText(adsName);
+                    detailBiref.setText(list.get(list.size() - 1).getBrief());
+                    String last = getString(R.string.front) + list.get(list.size() - 1).getUpdatedAt();
+                    lastTime.setText(last);
+                    imageID = list.get(list.size() - 1).getImageID();
+                    ProgressInterceptor.addListener(imageID, new ProgressListener() {
+                        @Override
+                        public void onProgress(int progress) {
+                            progressDialog.setProgress(progress);
+                        }
+                    });
+                    Glide.with(ADsDetailActivity.this).
+                            load(imageID)
+                            .into(new GlideDrawableImageViewTarget(imageDetail){
+                                @Override
+                                public void onLoadStarted(Drawable placeholder) {
+                                    super.onLoadStarted(placeholder);
+                                    progressDialog.show();
+                                }
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                    super.onResourceReady(resource, animation);
+                                        progressDialog.dismiss();
+                                        ProgressInterceptor.removeListener(imageID);
+                                    }
+                                });
+                    initImage();
+                }else {
+                    Toast.makeText(ADsDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        Glide.with(this).
-                load(imageID)
-                .into(new GlideDrawableImageViewTarget(imageDetail){
-                    @Override
-                    public void onLoadStarted(Drawable placeholder) {
-                        super.onLoadStarted(placeholder);
-                        progressDialog.show();
-                    }
 
-                    @Override
-                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                        super.onResourceReady(resource, animation);
-                        BmobQuery<AD> temple = new BmobQuery<>();
-                        temple.addWhereEqualTo("imageID",imageID);
-                        temple.findObjects(new FindListener<AD>() {
-                            @Override
-                            public void done(List<AD> list, BmobException e) {
-                                if (e == null){
-                                    detailName.setText(list.get(list.size() - 1).getName());
-                                    detailBiref.setText(list.get(list.size() - 1).getBrief());
-                                    String last = getString(R.string.front) + list.get(list.size() - 1).getUpdatedAt();
-                                    lastTime.setText(last);
-                                    progressDialog.dismiss();
-                                    ProgressInterceptor.removeListener(imageID);
-                                }else{
-                                    Toast.makeText(ADsDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-                    }
-                });
         //初始化图像
-        initImage();
+        //initImage();
         imageDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -232,8 +250,8 @@ public class ADsDetailActivity extends AppCompatActivity {
         data.add(imageInfo);
     }
 
-
-    private class TabAdapter extends FragmentPagerAdapter {
+    //设配器相关
+    private class TabAdapter extends DragDetailFragmentPagerAdapter {
         private TabAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -252,5 +270,95 @@ public class ADsDetailActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return list_title.get(position);
         }
+
+        //处理滑动冲突
+        private View mCurrentView;
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if(object instanceof View) {
+                mCurrentView = (View) object;
+            }else if (object instanceof Fragment) {
+                Fragment fragment = (Fragment) object;
+                mCurrentView = fragment.getView();
+            }
+        }
+
+        @Override
+        public View getPrimaryItem() {
+            return mCurrentView;
+        }
+    }
+
+    public String getAdsName() {
+        return adsName;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_message,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.leave_message:
+                LeaveMessage();
+                break;
+        }
+        return true;
+    }
+
+    private void LeaveMessage(){
+        //获取当前留言用户
+        user = BmobUser.getCurrentUser(User.class);
+        //dialog留言框
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.leave_message, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("留言");
+        builder.setView(view);
+        final EditText messageEdit = (EditText) view.findViewById(R.id.leave_message_edit);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String s = messageEdit.getText().toString();
+                //当前留言部分
+                Messages messages = new Messages();
+                messages.setContent(s);
+                messages.setUserName(user.getUsername());
+                messages.setAdName(adsName);
+                messages.setUserIcon(user.getUserIcon());
+                messages.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String s, BmobException e) {
+                        if(e == null){
+                            isSuccess = true;
+                            //通知碎片进行更改
+                            aDsMessageFragment.refresh(new ADsMessageFragment.CallBack() {
+                                @Override
+                                public boolean isLeaveMessageSuccess() {
+                                    return isSuccess;
+                                }
+                            });
+                            //Toast.makeText(ADsDetailActivity.this, "留言成功！", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(ADsDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

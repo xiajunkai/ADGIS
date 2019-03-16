@@ -23,10 +23,6 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
-/**
- *
- * Created by xiati on 2018/2/23.
- */
 
 public class BindPhoneDialog extends BaseBottomDialog {
 

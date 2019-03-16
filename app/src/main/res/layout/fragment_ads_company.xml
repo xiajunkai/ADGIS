@@ -3,15 +3,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="HardcodedText"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.xia.adgis.Main.Fragment.ADsCompanyFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="50sp"
-        android:text="广告牌公司信息"
-        android:textStyle="bold"
-        android:gravity="center" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="35dp"
+        app:cardCornerRadius="5dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:ignore="RtlSymmetry">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:layout_margin="10dp"
+                android:text="广告牌设计者/公司："
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/ads_designer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:paddingStart="15dp"
+                android:textSize="20sp" />
+            <View
+                android:background="#e0e0e0"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:layout_margin="10dp"
+                android:text="广告牌持有人/公司："
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/ads_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:paddingStart="15dp"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </FrameLayout>

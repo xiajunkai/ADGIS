@@ -4,13 +4,20 @@
     android:layout_height="match_parent"
     tools:ignore="HardcodedText"
     tools:context="com.xia.adgis.Main.Fragment.ADsMessageFragment">
-
     <TextView
+        android:id="@+id/message_empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="50sp"
-        android:text="广告牌信息"
-        android:textStyle="bold"
-        android:gravity="center"/>
+        android:text="当前广告牌暂无留言"
+        android:textSize="40sp"
+        android:gravity="center"
+        android:visibility="visible"/>
+    <ListView
+        android:id="@+id/message_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:divider="#00000000">
 
+    </ListView>
 </FrameLayout>

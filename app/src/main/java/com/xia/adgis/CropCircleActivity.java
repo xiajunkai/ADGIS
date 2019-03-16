@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -22,7 +22,9 @@ import com.kevin.crop.view.UCropView;
 
 import java.io.OutputStream;
 
-public class CropActivity extends AppCompatActivity {
+
+public class CropCircleActivity extends AppCompatActivity {
+
 
     UCropView mUCropView;
     GestureCropImageView mGestureCropImageView;
@@ -66,7 +68,7 @@ public class CropActivity extends AppCompatActivity {
         // 设置外部阴影颜色
         mOverlayView.setDimmedColor(Color.parseColor("#AA000000"));
         // 设置周围阴影是否为椭圆(如果false则为矩形)
-        mOverlayView.setOvalDimmedLayer(false);
+        mOverlayView.setOvalDimmedLayer(true);
         // 设置显示裁剪边框
         mOverlayView.setShowCropFrame(true);
         // 设置不显示裁剪网格

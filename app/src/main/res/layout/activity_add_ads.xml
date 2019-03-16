@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4f1f1"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText"
+    tools:context="com.xia.adgis.Main.Activity.AddAdsActivity">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/add_ads_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            style="@style/AppTheme.Toolbar"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:layout_scrollFlags="scroll|enterAlways|snap"/>
+    </android.support.design.widget.AppBarLayout>
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srlEnableRefresh="false">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:id="@+id/add_ads_edit_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/item_selector"
+                        android:clickable="true">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="15dp"
+                            android:text="请选择广告牌图片"
+                            tools:ignore="HardcodedText"
+                            android:textColor="#454343"
+                            android:textSize="18sp"/>
+
+                        <ImageView
+                            android:id="@+id/add_ads_image"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginTop="10dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/userback"
+                            android:layout_toStartOf="@+id/add_ads_right"
+                            android:contentDescription="@string/app_name" />
+
+                        <ImageView
+                            android:id="@+id/add_ads_right"
+                            android:layout_width="40dp"
+                            android:layout_height="45dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="5dp"
+                            android:src="@mipmap/ql_right"
+                            android:contentDescription="@string/app_name"/>
+                    </RelativeLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:layout_marginTop="20dp"
+                        android:background="#ffffff">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="15dp"
+                            android:text="广告牌名称:"
+                            android:textColor="#454343" />
+
+                        <EditText
+                            android:id="@+id/add_ads_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/item_selector"
+                            android:gravity="center_vertical"
+                            android:hint="请输入广告牌名称"
+                            android:lines="1"
+                            android:paddingStart="15dp"
+                            android:paddingEnd="0dp"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="#66000000" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:background="#ffffff">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="15dp"
+                            android:text="广告牌简介:"
+                            android:textColor="#454343" />
+
+                        <TextView
+                            android:id="@+id/add_ads_brief"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/item_selector"
+                            android:gravity="center_vertical"
+                            android:hint="请输入广告牌简介"
+                            android:lines="3"
+                            android:ellipsize="end"
+                            android:paddingStart="15dp"
+                            android:paddingEnd="0dp"
+                            android:clickable="true"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginTop="20dp"
+                        android:background="#ffffff">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="15dp"
+                            android:text="广告牌位置:"
+                            android:textColor="#454343" />
+
+                        <LinearLayout
+                            android:id="@+id/add_ads_location"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:background="@drawable/item_selector"
+                            android:clickable="true"
+                            android:paddingStart="15dp">
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:text="广告牌经度:"
+                                        android:textColor="#454343" />
+                                    <TextView
+                                        android:id="@+id/add_ads_longitude"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center_vertical"
+                                        android:lines="1"
+                                        android:paddingStart="15dp"
+                                        android:paddingEnd="0dp"
+                                        android:textSize="15sp" />
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="35dp">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:text="广告牌纬度:"
+                                        android:textColor="#454343" />
+                                    <TextView
+                                        android:id="@+id/add_ads_latitude"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center_vertical"
+                                        android:lines="1"
+                                        android:paddingStart="15dp"
+                                        android:paddingEnd="0dp"
+                                        android:textSize="15sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+</LinearLayout>

@@ -3,10 +3,6 @@ package com.xia.adgis.Register.Bean;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 
-/**
- *
- * Created by xiati on 2018/2/9.
- */
 
 public class User extends BmobUser {
 

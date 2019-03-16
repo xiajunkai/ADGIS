@@ -41,6 +41,8 @@ public class SettingActivity extends AppCompatActivity {
     RelativeLayout clearCaChe;
     @BindView(R.id.show_CaChe)
     TextView showCaChe;
+    @BindView(R.id.preferences)
+    RelativeLayout preferences;
     @BindView(R.id.appMessage)
     RelativeLayout appMessage;
     @BindView(R.id.log_out)
@@ -63,19 +65,12 @@ public class SettingActivity extends AppCompatActivity {
         initToolbar();
         //显示缓存大小
         initCaCheSize();
+        //偏好设置
+        preference();
         //应用信息
         showAppMessage();
-        logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BmobUser.logOut();
-                Intent intent = new Intent();
-                intent.putExtra("setting","logout");
-                setResult(RESULT_OK,intent);
-                finish();
-                overridePendingTransition(0,0);
-            }
-        });
+        //登出
+        logOut();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,7 +148,7 @@ public class SettingActivity extends AppCompatActivity {
     //使用遍历删除所有缓存文件
     private void deleteAllCache(File dir){
         if(!dir.isDirectory()){
-            Log.v("TAG", "请传入一个文件夹对象");
+            //Log.v("TAG", "请传入一个文件夹对象");
             return;
         }
         File[] listFiles = dir.listFiles();
@@ -162,7 +157,7 @@ public class SettingActivity extends AppCompatActivity {
             //是否是一个文件夹(路径)
             if(file.isDirectory()){
                 //文件夹
-                Log.v("TAG", "文件夹："+file.toString());
+                //Log.v("TAG", "文件夹："+file.toString());
                 deleteAllCache(file);//递归调用
             }else {
                 //文件
@@ -172,12 +167,39 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
+    private void preference(){
+        preferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra("setting","preference");
+                setResult(RESULT_OK,intent);
+                finish();
+                overridePendingTransition(R.anim.in_1,R.anim.out_1);
+            }
+        });
+    }
+
     private void showAppMessage(){
         appMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SettingActivity.this,ApplicationMessageActivity.class));
                 overridePendingTransition(R.anim.in,R.anim.out);
+            }
+        });
+    }
+
+    private void logOut(){
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BmobUser.logOut();
+                Intent intent = new Intent();
+                intent.putExtra("setting","logout");
+                setResult(RESULT_OK,intent);
+                finish();
+                overridePendingTransition(0,0);
             }
         });
     }

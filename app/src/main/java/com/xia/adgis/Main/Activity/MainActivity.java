@@ -15,8 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.BounceInterpolator;
@@ -58,10 +57,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.swipeback.SwipeBackActivityImpl;
-import com.google.gson.Gson;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.Main.Bean.AD;
-import com.xia.adgis.Main.Fragment.SettingFragment;
 import com.xia.adgis.Main.Tool.StatusBarUtil;
 import com.xia.adgis.R;
 import com.amap.api.maps.AMap;
@@ -80,8 +77,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FetchUserInfoListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Subscriber;
 
@@ -160,6 +155,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     //弹出的popwindow
     private PopupWindow popupWindow;
     private int navigationHeight;   //弹窗弹出的位置
+    private String title;   //弹出对应的标题
     //弹窗内部UI
     ImageView locationImage;
     TextView locationName;
@@ -345,6 +341,13 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             @Override
             public void onMapLongClick(LatLng latLng) {
                 //隐藏infoWindows
+                //deleteInfoWindows(tempMarker);
+            }
+        });
+        mAMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
+            @Override
+            public void onTouch(MotionEvent motionEvent) {
+                //隐藏infoWindows
                 deleteInfoWindows(tempMarker);
             }
         });
@@ -464,7 +467,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     //点击事件所进行的加载
     private void loadingCorrespongdingMessage(Marker marker){
         openPopupWindow();
-        String title = marker.getTitle();
+        title = marker.getTitle();
         tempImage = getImage(title);
         locationName.setText(title);
         //此处为预览图片所进行的处理
@@ -673,7 +676,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                     case R.id.All_ADs:
                         //Intent intent = new Intent(MainActivity.this,AllADsActivity.class);
                         //startActivity(intent);
-                        //startActivity(new Intent(MainActivity.this,ForgetPassWordActivity.class));
+                        startActivity(new Intent(MainActivity.this,AllADsActivity.class));
+                        overridePendingTransition(R.anim.in,R.anim.out);
                         break;
                     case R.id.setting:
                         Intent intent = new Intent(MainActivity.this,SettingActivity.class);
@@ -807,7 +811,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,ADsDetailActivity.class);
-                intent.putExtra("data",tempImage);
+                intent.putExtra("data",title);
                 ActivityCompat.startActivity(MainActivity.this,
                         intent,
                         ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -991,12 +995,19 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             case SETTING :
                 if(resultCode == RESULT_OK){
                     String type = data.getStringExtra("setting");
-                    if(type.equals("logout")) {
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        overridePendingTransition(R.anim.in, R.anim.out);
-                        finish();
-                    }else{
-                        drawer.closeDrawer(Gravity.START);
+                    switch (type) {
+                        case "logout":
+                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                            overridePendingTransition(R.anim.in, R.anim.out);
+                            finish();
+                            break;
+                        case "preference":
+                            drawer.closeDrawer(Gravity.START);
+                            drawer.openDrawer(Gravity.END);
+                            break;
+                        default:
+                            drawer.closeDrawer(Gravity.START);
+                            break;
                     }
                     //设置界面载入设置
                     LoadSettingPreferences();
@@ -1031,36 +1042,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                     //用户邮箱
                     usermail.setText(user.getEmail());
                 }
-
-                    /*BmobUser.fetchUserJsonInfo(new FetchUserInfoListener<String>() {
-                        @Override
-                        public void done(String s, BmobException e) {
-                            if (e == null) {
-                                Gson gson = new Gson();
-                                User temp = gson.fromJson(s, User.class);
-                                Glide.with(MainActivity.this).load(temp.getUserIcon()).into(icon);
-                                Glide.with(MainActivity.this)
-                                        .load(temp.getUserIcon())
-                                        .into(new GlideDrawableImageViewTarget(mCircleImageView) {
-                                            @Override
-                                            public void onLoadStarted(Drawable placeholder) {
-                                                super.onLoadStarted(placeholder);
-                                                progressDialog.show();
-                                            }
-
-                                            @Override
-                                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                                super.onResourceReady(resource, animation);
-                                                progressDialog.dismiss();
-                                            }
-                                        });
-                                //用户邮箱
-                                usermail.setText(temp.getEmail());
-                            }
-
-                        }
-                    });*/
-
         }
     }
 

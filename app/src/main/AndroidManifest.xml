@@ -66,7 +66,7 @@
             android:name=".Register.RegisterActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
         <!-- 注册的图片裁剪界面 -->
-        <activity android:name=".CropActivity" />
+        <activity android:name=".CropCircleActivity" />
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />
@@ -100,8 +100,17 @@
             android:theme="@style/translucent" />
         <activity
             android:name=".Main.Activity.ForgetPassWordActivity"
-            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"></activity>
-        <activity android:name=".Main.Activity.ApplicationMessageActivity"></activity>
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
+        <activity android:name=".Main.Activity.ApplicationMessageActivity" />
+        <activity android:name=".Main.Activity.AboutUsActivity" />
+        <activity android:name=".Main.Activity.AllADsActivity" />
+        <activity
+            android:name=".Main.Activity.AddAdsActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
+        <activity android:name=".Main.Activity.EditADsActivity" />
+        <activity android:name=".Main.Activity.ConfirmLocationActivity" />
+        <activity android:name=".CropActivity"></activity>
     </application>
 
 </manifest>

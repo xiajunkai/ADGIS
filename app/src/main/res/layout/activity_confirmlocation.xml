@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xia.adgis.Main.Activity.ConfirmLocationActivity">
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/confirm_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+        <ImageView
+            android:scaleType="center"
+            android:id="@+id/confirm_help"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:contentDescription="@string/app_name"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_help"/>
+    </FrameLayout>
+</FrameLayout>

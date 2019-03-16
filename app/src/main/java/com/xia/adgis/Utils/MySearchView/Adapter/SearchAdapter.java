@@ -96,7 +96,7 @@ public class SearchAdapter extends BaseAdapter{
             @Override
             public boolean onLongClick(View view) {
                 Intent intent = new Intent(mContext, ADsDetailActivity.class);
-                intent.putExtra("data",mData.get(position).url);
+                intent.putExtra("data",mData.get(position).title);
 
                 ActivityCompat.startActivity(mContext,intent,
                         ActivityOptionsCompat.makeSceneTransitionAnimation(

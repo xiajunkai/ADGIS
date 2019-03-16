@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -50,7 +51,7 @@ import com.lljjcoder.citywheel.CityConfig;
 import com.lljjcoder.style.citypickerview.CityPickerView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.xia.adgis.App;
-import com.xia.adgis.CropActivity;
+import com.xia.adgis.CropCircleActivity;
 import com.xia.adgis.Main.Tool.BindPhoneDialog;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
@@ -203,7 +204,10 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
     private void initToolBar(){
         toolbar.setTitle("编辑个人资料");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     //初始化加载对话框
@@ -307,7 +311,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         //设置背景色(半透明)
         setBackgroundAlpha(0.5f);
     }
-
+    //弹窗内点击事件
     private void setOnPopupViewClick(View view) {
         TextView takePhoto = (TextView) view.findViewById(R.id.take_photo);
         TextView pickPicture = (TextView) view.findViewById(R.id.pick_picture);
@@ -404,7 +408,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         UCrop.of(uri, mDestinationUri)
                 .withAspectRatio(1, 1)
                 .withMaxResultSize(1024, 1024)
-                .withTargetActivity(CropActivity.class)
+                .withTargetActivity(CropCircleActivity.class)
                 .start(this);
     }
 
@@ -626,7 +630,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         return true;
     }
 
-    //
+    //保存用户更改
     private void saveUserModify(){
 
         String nickName = editNickname.getText().toString();

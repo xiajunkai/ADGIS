@@ -24,11 +24,6 @@ import android.widget.Toast;
 import com.xia.adgis.R;
 import com.xia.adgis.Main.DataBase.HistorySqliteHelpter;
 
-
-/**
- * Created by yetwish on 2015-05-11
- */
-
 public class SearchView extends LinearLayout implements View.OnClickListener {
 
     /**
@@ -66,20 +61,14 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
      */
     private ArrayAdapter<String> mHintAdapter;
 
-    /**
-     * 自动补全adapter 只显示名字
-     */
+
+    //自动补全adapter 只显示名字
     private ArrayAdapter<String> mAutoCompleteAdapter;
 
-    /**
-     * 搜索回调接口
-     */
+     //搜索回调接口
     private SearchViewListener mListener;
 
-    /**
-     * 设置搜索回调接口
-     *
-     */
+    //设置搜索回调接口
     public void setSearchViewListener(SearchViewListener listener) {
         mListener = listener;
     }
@@ -293,18 +282,10 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
      */
     public interface SearchViewListener {
 
-        /**
-         * 更新自动补全内容
-         *
-         * @param text 传入补全后的文本
-         */
+        // 更新自动补全内容
         void onRefreshAutoComplete(String text);
 
-        /**
-         * 开始搜索
-         *
-         * @param text 传入输入框的文本
-         */
+        //开始搜索
         void onSearch(String text);
 
     }

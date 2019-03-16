@@ -43,7 +43,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.Target;
 import com.kevin.crop.UCrop;
-import com.xia.adgis.CropActivity;
+import com.xia.adgis.CropCircleActivity;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
@@ -453,7 +453,7 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
         UCrop.of(uri, mDestinationUri)
                 .withAspectRatio(1, 1)
                 .withMaxResultSize(1024, 1024)
-                .withTargetActivity(CropActivity.class)
+                .withTargetActivity(CropCircleActivity.class)
                 .start(this);
     }
 
