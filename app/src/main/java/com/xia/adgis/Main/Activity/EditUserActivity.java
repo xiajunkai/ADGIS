@@ -643,6 +643,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         String area = editArea.getText().toString();
         String sex = editSex.getText().toString();
         String birthday = editBirthday.getText().toString();
+        String phone = editPhone.getText().toString();
         String email = editMail.getText().toString();
         String motto = editMotte.getText().toString();
 

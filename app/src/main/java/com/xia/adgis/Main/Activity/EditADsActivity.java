@@ -824,6 +824,10 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
                 if(e == null){
                     Toast.makeText(EditADsActivity.this, "信息更新成功！", Toast.LENGTH_SHORT).show();
                     loading.dismiss();
+                    Intent in = new Intent();
+                    in.putExtra("edit_ad","success");
+                    setResult(RESULT_OK,in);
+                    onBackPressed();
                 }else {
                     Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     loading.dismiss();
@@ -838,7 +842,6 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     //碎片返回数据
-
     public TextView getEditLength() {
         return editLength;
     }

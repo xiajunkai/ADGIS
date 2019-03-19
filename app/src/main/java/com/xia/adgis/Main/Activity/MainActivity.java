@@ -77,6 +77,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Subscriber;
 
@@ -87,6 +89,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     private static final int SETTING = 2;
     private static final int USER_CENTRE = 3;
     private static final int ALL_ADS = 4;
+    private static final int ADS_DETAIL = 20;
     //需点击隐藏的UI控件
     @BindView(R.id.fullscreen_content_controls)
     View mControlsView;
@@ -241,52 +244,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         initLeftDrawerLayout();
         //初始化右侧滑栏
         initRightDrawerLayout();
-        //加载数据
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(true);
-        progressDialog.setMessage("加载中");
-        progressDialog.show();
-
-        //使用Bmob获取用来标记的信息
-        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        //先判断是否有缓存
-        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
-        if(isCache){
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
-        }else{
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
-        }
-        adBmobQuery.findObjectsObservable(AD.class)
-                .subscribe(new Subscriber<List<AD>>() {
-                    @Override
-                    public void onCompleted() {
-                        //加载顶部导航栏的头像
-                        Glide.with(MainActivity.this)
-                                .load(user.getUserIcon())
-                                .into(new GlideDrawableImageViewTarget(mCircleImageView){
-                                    @Override
-                                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                        super.onResourceReady(resource, animation);
-                                        progressDialog.dismiss();
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(List<AD> ads) {
-                        bmobData = ads;
-                        addMarksToMap(ads);
-                        //是否记忆位置
-                        boolean isMemory = settingPreferences.getBoolean("preference_history",true);
-                        isMemoryLocation(isMemory);
-                    }
-                });
+        //加载数据(初始版本，从缓存中读取)
+        loadingMapData();
         //底部导航栏图片资源
         infoIcon.setImageResource(R.drawable.ic_visibility_off_unpress);
         mCircleImageView.setOnClickListener(new View.OnClickListener() {
@@ -309,7 +268,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         mAMap.setMapType(MAP_TYPE);
         mUiSettings.setRotateGesturesEnabled(isRound);
     }
-
+    /**
+     *  地图部分
+     */
     //初始化并设置地图
     private void initMapSetting(){
         //初始化MapView
@@ -420,7 +381,84 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         //给定位客户端对象设置定位参数
         mAMapLocationClient.setLocationOption(mAMapLocationClientOption);
     }
+    //创建时加载地图数据(有缓存判断)
+    private void loadingMapData(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(true);
+        progressDialog.setMessage("加载中");
+        progressDialog.show();
+        //使用Bmob获取用来标记的信息
+        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+        //先判断是否有缓存
+        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
+        if(isCache){
+            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
+        }else{
+            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
+        }
+        adBmobQuery.findObjectsObservable(AD.class)
+                .subscribe(new Subscriber<List<AD>>() {
+                    @Override
+                    public void onCompleted() {
+                        //加载顶部导航栏的头像
+                        Glide.with(MainActivity.this)
+                                .load(user.getUserIcon())
+                                .into(new GlideDrawableImageViewTarget(mCircleImageView){
+                                    @Override
+                                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                        super.onResourceReady(resource, animation);
+                                        progressDialog.dismiss();
+                                    }
+                                });
+                    }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onNext(List<AD> ads) {
+                        bmobData = ads;
+                        addMarksToMap(ads);
+                        //是否记忆位置
+                        boolean isMemory = settingPreferences.getBoolean("preference_history",true);
+                        isMemoryLocation(isMemory);
+                    }
+                });
 
+    }
+    //刷新地图数据
+    private void RefreshMapData(){
+        progressDialog.show();
+        //使用Bmob获取用来标记的信息
+        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+        //先判断是否有缓存
+        adBmobQuery.findObjects(new FindListener<AD>() {
+            @Override
+            public void done(List<AD> list, BmobException e) {
+                if(e == null) {
+                    bmobData = list;
+                    addMarksToMap(list);
+                    tempImage = getImage(title);
+                    //图片加载
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("加载中");
+                    Glide.with(MainActivity.this).
+                            load(tempImage).
+                            into(new GlideDrawableImageViewTarget(locationImage){
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                    super.onResourceReady(resource, animation);
+                                    progressDialog.dismiss();
+                                }
+                            });
+                }else {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }
+        });
+    }
     //对地图添加mark
     private void addMarksToMap(List<AD> ads){
         mAMap.clear();
@@ -460,13 +498,13 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         jumpPoint(marker);
         if(!marker.equals(locationMarker)){
             tempMarkerId = SearchTempMarkerIdFromLatLng(marker.getPosition());
-            loadingCorrespongdingMessage(marker);
+            loadingCorrespondingMessage(marker);
         }
         return false;
     }
 
     //点击事件所进行的加载
-    private void loadingCorrespongdingMessage(Marker marker){
+    private void loadingCorrespondingMessage(Marker marker){
         openPopupWindow();
         title = marker.getTitle();
         tempImage = getImage(title);
@@ -481,7 +519,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         imageInfo.url = tempImage;
         data.add(imageInfo);
         //图片加载
-        final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("加载中");
         Glide.with(this).
@@ -513,6 +550,123 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         return s;
     }
 
+    //pop弹出函数
+    private void openPopupWindow() {
+        //防止重复按按钮
+        if (popupWindow != null && popupWindow.isShowing()) {
+            return;
+        }
+        //设置PopupWindow的View
+        view = LayoutInflater.from(this).inflate(R.layout.ad_detail_popwindow, null);
+        popupWindow = new PopupWindow(view, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //设置背景,这个没什么效果，不添加会报错
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        //设置点击弹窗外隐藏自身
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+        //设置动画
+        popupWindow.setAnimationStyle(R.style.PopupWindow);
+        //设置位置
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, navigationHeight);
+        //设置消失监听
+        popupWindow.setOnDismissListener(this);
+        //设置PopupWindow的View点击事件
+        setOnPopupViewClick(view);
+        //设置背景色(半透明)
+        setBackgroundAlpha(0.8f);
+    }
+
+    private void setOnPopupViewClick(View view) {
+
+        locationImage = (ImageView) view.findViewById(R.id.locationImage);
+        locationImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,ADsDetailActivity.class);
+                intent.putExtra("data",title);
+                ActivityCompat.startActivityForResult(MainActivity.this,
+                        intent,ADS_DETAIL,
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                MainActivity.this,
+                                new Pair<>(view, "detail_image"))
+                                .toBundle());
+            }
+        });
+        locationImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                //获取相对位置，左边和顶部
+                int location[] = new int[2];
+                locationImage.getLocationOnScreen(location);
+                bdInfo.x = location[0];
+                bdInfo.y = location[1];
+                //视图布局的宽高
+                bdInfo.width = locationImage.getWidth();
+                bdInfo.height = locationImage.getHeight();
+                //跳转和传数据都必须要
+                Intent intent = new Intent(MainActivity.this, RolloutPreviewActivity.class);
+                intent.putExtra("data", (Serializable) data);
+                intent.putExtra("bdinfo",bdInfo);
+                intent.putExtra("type", 0);//单图传0
+                intent.putExtra("index",0);
+                startActivity(intent);
+                overridePendingTransition(0,0);
+                return false;
+            }
+        });
+        popDetail = (ImageView) view.findViewById(R.id.popDetail);
+        popDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popMenu = new TopRightMenu(MainActivity.this);
+                List<MenuItem> menuItemList = new ArrayList<>();
+                menuItemList.add(new MenuItem(R.drawable.ads_message,"文字内容"));
+                menuItemList.add(new MenuItem(R.drawable.ads_physical,"物理信息"));
+                menuItemList.add(new MenuItem(R.drawable.ads_company,"公司信息"));
+                menuItemList.add(new MenuItem(R.drawable.ads_maintain,"维护信息"));
+                popMenu.addMenuList(menuItemList)
+                        .setOnMenuItemClickListener(new TopRightMenu.OnMenuItemClickListener() {
+                            @Override
+                            public void onMenuItemClick(int position) {
+                                Toast.makeText(MainActivity.this, "待完善", Toast.LENGTH_SHORT).show();
+                                switch (position){
+                                    case 0:
+
+                                        break;
+                                    case 1:
+
+                                        break;
+                                    case 2:
+
+                                        break;
+                                    case 3:
+
+                                        break;
+                                    default:
+                                }
+                            }
+                        })
+                        .showAsDropDown(popDetail,-250,-25)
+                        .dimBackground(false);
+            }
+        });
+        locationName = (TextView) view.findViewById(R.id.locationName);
+
+    }
+
+    //设置屏幕背景透明效果
+    public void setBackgroundAlpha(float alpha) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = alpha;
+        getWindow().setAttributes(lp);
+    }
+
+    @Override
+    public void onDismiss() {
+        setBackgroundAlpha(1);
+    }
+
     //marker点击时跳动一下
     public void jumpPoint(final Marker marker) {
         final Handler handler = new Handler();
@@ -542,6 +696,31 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         });
     }
 
+    //存储退出时的mark序号
+    private void isSaveTempMarkId(int MarkerId, boolean isMenory){
+        SharedPreferences.Editor editor = getSharedPreferences("map_data", MODE_PRIVATE).edit();
+        if(isMenory) {
+            editor.putInt("tempMarkerId", MarkerId);
+        }else{
+            editor.clear();
+        }
+        editor.apply();
+    }
+
+    //是否记忆了退出位置
+    private void isMemoryLocation(boolean isMemory){
+        if(isMemory) {
+            mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    tempLatLng.get(getSharedPreferences("map_data", MODE_PRIVATE).
+                            getInt("tempMarkerId", 0)), 17, 0, 0)), 500, null);
+        }else{
+            mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    tempLatLng.get(0), 17, 0, 0)), 500, null);
+        }
+    }
+    /**
+     * 底部导航栏
+     */
     //初始化底部导航栏
     private void initBottomNavigationBar(){
         back.setOnClickListener(new View.OnClickListener() {
@@ -650,6 +829,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         });
     }
 
+    /**
+     * 右上角菜单
+     */
     //右上角菜单
     private void initTopRightMenu(){
         mPreferences.setOnClickListener(new View.OnClickListener() {
@@ -667,6 +849,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         });
     }
 
+    /**
+     * 左侧滑栏
+     */
     //左侧滑栏
     private void initLeftDrawerLayout(){
 
@@ -754,6 +939,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         });
     }
 
+    /**
+     * 右侧滑栏
+     */
     //右侧滑栏
     private void initRightDrawerLayout(){
         right_nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -785,127 +973,11 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,Gravity.END);
     }
 
-    //pop弹出函数
-    private void openPopupWindow() {
-        //防止重复按按钮
-        if (popupWindow != null && popupWindow.isShowing()) {
-            return;
-        }
-        //设置PopupWindow的View
-        view = LayoutInflater.from(this).inflate(R.layout.ad_detail_popwindow, null);
-        popupWindow = new PopupWindow(view, RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        //设置背景,这个没什么效果，不添加会报错
-        popupWindow.setBackgroundDrawable(new BitmapDrawable());
-        //设置点击弹窗外隐藏自身
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        //设置动画
-        popupWindow.setAnimationStyle(R.style.PopupWindow);
-        //设置位置
-        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, navigationHeight);
-        //设置消失监听
-        popupWindow.setOnDismissListener(this);
-        //设置PopupWindow的View点击事件
-        setOnPopupViewClick(view);
-        //设置背景色(半透明)
-        setBackgroundAlpha(0.8f);
-    }
-
-    private void setOnPopupViewClick(View view) {
-
-        locationImage = (ImageView) view.findViewById(R.id.locationImage);
-        locationImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,ADsDetailActivity.class);
-                intent.putExtra("data",title);
-                ActivityCompat.startActivity(MainActivity.this,
-                        intent,
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                MainActivity.this,
-                                new Pair<>(view, "detail_image"))
-                                .toBundle());
-            }
-        });
-        locationImage.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                //获取相对位置，左边和顶部
-                int location[] = new int[2];
-                locationImage.getLocationOnScreen(location);
-                bdInfo.x = location[0];
-                bdInfo.y = location[1];
-                //视图布局的宽高
-                bdInfo.width = locationImage.getWidth();
-                bdInfo.height = locationImage.getHeight();
-                //跳转和传数据都必须要
-                Intent intent = new Intent(MainActivity.this, RolloutPreviewActivity.class);
-                intent.putExtra("data", (Serializable) data);
-                intent.putExtra("bdinfo",bdInfo);
-                intent.putExtra("type", 0);//单图传0
-                intent.putExtra("index",0);
-                startActivity(intent);
-                overridePendingTransition(0,0);
-                return false;
-            }
-        });
-        popDetail = (ImageView) view.findViewById(R.id.popDetail);
-        popDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popMenu = new TopRightMenu(MainActivity.this);
-                List<MenuItem> menuItemList = new ArrayList<>();
-                menuItemList.add(new MenuItem(R.drawable.ads_message,"文字内容"));
-                menuItemList.add(new MenuItem(R.drawable.ads_physical,"物理信息"));
-                menuItemList.add(new MenuItem(R.drawable.ads_company,"公司信息"));
-                menuItemList.add(new MenuItem(R.drawable.ads_maintain,"维护信息"));
-                popMenu.addMenuList(menuItemList)
-                        .setOnMenuItemClickListener(new TopRightMenu.OnMenuItemClickListener() {
-                            @Override
-                            public void onMenuItemClick(int position) {
-                                Toast.makeText(MainActivity.this, "待完善", Toast.LENGTH_SHORT).show();
-                                switch (position){
-                                    case 0:
-
-                                        break;
-                                    case 1:
-
-                                        break;
-                                    case 2:
-
-                                        break;
-                                    case 3:
-
-                                        break;
-                                    default:
-                                }
-                            }
-                        })
-                        .showAsDropDown(popDetail,-250,-25)
-                .dimBackground(false);
-            }
-        });
-        locationName = (TextView) view.findViewById(R.id.locationName);
-
-    }
-
-    //设置屏幕背景透明效果
-    public void setBackgroundAlpha(float alpha) {
-        WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.alpha = alpha;
-        getWindow().setAttributes(lp);
-    }
 
    @Override
     protected void onResume() {
         super.onResume();
         mMapView.onResume();
-    }
-
-    @Override
-    public void onDismiss() {
-        setBackgroundAlpha(1);
     }
 
     @Override
@@ -928,29 +1000,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         //退出界面的时候停止定位
         if (mAMapLocationClient != null) {
             mAMapLocationClient.stopLocation();
-        }
-    }
-
-    //存储退出时的mark序号
-    private void isSaveTempMarkId(int MarkerId, boolean isMenory){
-        SharedPreferences.Editor editor = getSharedPreferences("map_data", MODE_PRIVATE).edit();
-        if(isMenory) {
-            editor.putInt("tempMarkerId", MarkerId);
-        }else{
-            editor.clear();
-        }
-        editor.apply();
-    }
-
-    //是否记忆了退出位置
-    private void isMemoryLocation(boolean isMemory){
-        if(isMemory) {
-            mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                    tempLatLng.get(getSharedPreferences("map_data", MODE_PRIVATE).
-                            getInt("tempMarkerId", 0)), 17, 0, 0)), 500, null);
-        }else{
-            mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                    tempLatLng.get(0), 17, 0, 0)), 500, null);
         }
     }
 
@@ -977,12 +1026,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         setSwipeBackEnable(false);
     }
 
-    //每次进入时都会抓取网上最新缓存
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
@@ -994,7 +1037,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                         mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                 latLng, 17, 0, 0)), 500, null);
                         Marker marker = SearchCorrespondingMarker(latLng);
-                        loadingCorrespongdingMessage(marker);
+                        loadingCorrespondingMessage(marker);
                     }else{
                         Toast.makeText(this, "找不到位置！", Toast.LENGTH_SHORT).show();
                     }
@@ -1032,7 +1075,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                     super.onLoadStarted(placeholder);
                                     progressDialog.show();
                                 }
-
                                 @Override
                                 public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                                     super.onResourceReady(resource, animation);
@@ -1053,8 +1095,24 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                     }else {
                         userAdmin.setText("非管理员账户");
                     }
-
                 }
+                break;
+            case ALL_ADS:
+                if (resultCode == RESULT_OK){
+                    String all = data.getStringExtra("all");
+                    if(all.equals("success")){
+                        RefreshMapData();
+                    }
+                }
+                break;
+            case ADS_DETAIL:
+                if(resultCode == RESULT_OK){
+                    String detail = data.getStringExtra("detail_info");
+                    if (detail.equals("success")){
+                        RefreshMapData();
+                    }
+                }
+                break;
         }
     }
 

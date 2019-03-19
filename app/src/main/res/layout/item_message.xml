@@ -27,8 +27,7 @@
                 android:layout_height="50dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_gravity="center"
-                android:src="@drawable/tubiao" />
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/message_user_name"

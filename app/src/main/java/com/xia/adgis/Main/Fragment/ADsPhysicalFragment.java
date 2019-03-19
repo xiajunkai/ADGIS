@@ -31,7 +31,8 @@ public class ADsPhysicalFragment extends Fragment {
     TextView height;
     @BindView(R.id.ads_material)
     TextView material;
-
+    ADsDetailActivity aDsDetailActivity;
+    String title;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,8 +45,12 @@ public class ADsPhysicalFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ADsDetailActivity aDsDetailActivity = (ADsDetailActivity) getActivity();
-        String title = aDsDetailActivity.getAdsName();
+        aDsDetailActivity = (ADsDetailActivity) getActivity();
+        title = aDsDetailActivity.getAdsName();
+        refresh();
+    }
+
+    private void refresh(){
         BmobQuery<ADphysical> aDphysicalBmobQuery = new BmobQuery<>();
         aDphysicalBmobQuery.addWhereEqualTo("name", title);
         aDphysicalBmobQuery.findObjects(new FindListener<ADphysical>() {
@@ -61,5 +66,13 @@ public class ADsPhysicalFragment extends Fragment {
                 }
             }
         });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        String s = aDsDetailActivity.getIsEdit();
+        if(s.equals("success")){
+            refresh();
+        }
     }
 }

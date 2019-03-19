@@ -149,13 +149,6 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
         //
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        //先判断是否有缓存
-        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
-        if(isCache){
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
-        }else{
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
-        }
         adBmobQuery.findObjectsObservable(AD.class)
                 .subscribe(new Subscriber<List<AD>>() {
                     @Override
@@ -175,7 +168,7 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
                             SearchItem temp = new SearchItem();
                             temp.title = ads.get(i).getName();
                             temp.url = ads.get(i).getImageID();
-                            temp.content = "待完善";
+                            temp.content = ads.get(i).getBrief();
                             temp.width = 1400;
                             temp.height = 1400;
                             temp.latitude = ads.get(i).getLatitude();

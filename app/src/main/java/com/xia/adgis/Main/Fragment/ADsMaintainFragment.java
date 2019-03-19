@@ -31,6 +31,8 @@ public class ADsMaintainFragment extends Fragment {
     TextView context;
     @BindView(R.id.ads_maintain_time)
     TextView time;
+    ADsDetailActivity aDsDetailActivity;
+    String title;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,8 +44,12 @@ public class ADsMaintainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ADsDetailActivity aDsDetailActivity = (ADsDetailActivity) getActivity();
-        String title = aDsDetailActivity.getAdsName();
+        aDsDetailActivity = (ADsDetailActivity) getActivity();
+        title = aDsDetailActivity.getAdsName();
+        refresh();
+    }
+
+    private void refresh(){
         BmobQuery<ADmaintain> aDmaintainBmobQuery = new BmobQuery<>();
         aDmaintainBmobQuery.addWhereEqualTo("name",title);
         aDmaintainBmobQuery.findObjects(new FindListener<ADmaintain>() {
@@ -53,10 +59,18 @@ public class ADsMaintainFragment extends Fragment {
                     company.setText(list.get(list.size()-1).getCompany());
                     context.setText(list.get(list.size()-1).getContext());
                     time.setText(list.get(list.size()-1).getTime());
-               }else {
+                }else {
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        String s = aDsDetailActivity.getIsEdit();
+        if(s.equals("success")){
+            refresh();
+        }
     }
 }

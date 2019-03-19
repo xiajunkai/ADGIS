@@ -8,7 +8,6 @@ import java.io.Serializable;
 public class Messages extends BmobObject implements Serializable {
     private String adName;
     private String userName;
-    private String userIcon;
     private String content;
 
     public String getAdName() {
@@ -25,14 +24,6 @@ public class Messages extends BmobObject implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getUserIcon() {
-        return userIcon;
-    }
-
-    public void setUserIcon(String userIcon) {
-        this.userIcon = userIcon;
     }
 
     public String getContent() {

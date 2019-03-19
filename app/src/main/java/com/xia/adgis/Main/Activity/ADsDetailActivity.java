@@ -109,11 +109,16 @@ public class ADsDetailActivity extends AppCompatActivity {
     User user;
     //留言是否成功
     boolean isSuccess = false;
+    //编辑是否正常
+    String isEdit = "fail";
+    //
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ads_detail);
         ButterKnife.bind(this);
+        isEdit = "fail";
         //获取当前广告牌名称
         adsName = getIntent().getStringExtra("data");
         title.setText(adsName);
@@ -177,7 +182,30 @@ public class ADsDetailActivity extends AppCompatActivity {
         });
         toolbar.setBackgroundColor(0);
         //加载
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+        loadingData();
+        imageDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int location[] = new int[2];
+                imageDetail.getLocationOnScreen(location);
+                bdInfo.x = location[0];
+                bdInfo.y = location[1];
+                //视图布局的宽高
+                bdInfo.width = imageDetail.getWidth();
+                bdInfo.height = imageDetail.getHeight();
+                Intent intent = new Intent(ADsDetailActivity.this, RolloutPreviewActivity.class);
+                intent.putExtra("data", (Serializable) data);
+                intent.putExtra("bdinfo",bdInfo);
+                intent.putExtra("type", 0);//单图传0
+                intent.putExtra("index",0);
+                startActivity(intent);
+            }
+        });
+    }
+
+    //加载数据
+    private void loadingData(){
+        progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("加载中");
@@ -209,35 +237,14 @@ public class ADsDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                                     super.onResourceReady(resource, animation);
-                                        progressDialog.dismiss();
-                                        ProgressInterceptor.removeListener(imageID);
-                                    }
-                                });
+                                    progressDialog.dismiss();
+                                    ProgressInterceptor.removeListener(imageID);
+                                }
+                            });
                     initImage();
                 }else {
                     Toast.makeText(ADsDetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-
-        //初始化图像
-        //initImage();
-        imageDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int location[] = new int[2];
-                imageDetail.getLocationOnScreen(location);
-                bdInfo.x = location[0];
-                bdInfo.y = location[1];
-                //视图布局的宽高
-                bdInfo.width = imageDetail.getWidth();
-                bdInfo.height = imageDetail.getHeight();
-                Intent intent = new Intent(ADsDetailActivity.this, RolloutPreviewActivity.class);
-                intent.putExtra("data", (Serializable) data);
-                intent.putExtra("bdinfo",bdInfo);
-                intent.putExtra("type", 0);//单图传0
-                intent.putExtra("index",0);
-                startActivity(intent);
             }
         });
     }
@@ -291,10 +298,6 @@ public class ADsDetailActivity extends AppCompatActivity {
         }
     }
 
-    public String getAdsName() {
-        return adsName;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_message,menu);
@@ -344,13 +347,12 @@ public class ADsDetailActivity extends AppCompatActivity {
                 messages.setContent(s);
                 messages.setUserName(user.getUsername());
                 messages.setAdName(adsName);
-                messages.setUserIcon(user.getUserIcon());
                 messages.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
                         if(e == null){
                             isSuccess = true;
-                            //通知碎片进行更改
+                            //通知留言碎片进行更改
                             aDsMessageFragment.refresh(new ADsMessageFragment.CallBack() {
                                 @Override
                                 public boolean isLeaveMessageSuccess() {
@@ -376,9 +378,29 @@ public class ADsDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == EDIT){
+            if (resultCode == RESULT_OK){
+                isEdit = data.getStringExtra("edit_ad");
+                if(isEdit.equals("success")){
+                    loadingData();
+                }
+            }
+        }
+    }
+
+    public String getAdsName() {
+        return adsName;
+    }
+
+    public String getIsEdit() {
+        return isEdit;
+    }
+
+    @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        //intent.putExtra("detail_info","look");
+        intent.putExtra("detail_info",isEdit);
         setResult(RESULT_OK,intent);
         super.onBackPressed();
     }

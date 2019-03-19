@@ -40,6 +40,7 @@ public class AllADsActivity extends AppCompatActivity {
     private ADsAdapter adapter;
     //回调请求码
     public static final int EDIT_ADS = 20;
+    private String result = "fail";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,9 +126,19 @@ public class AllADsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == EDIT_ADS){
             if (resultCode == RESULT_OK){
-                //String s = data.getStringExtra("detail_info");
-                //Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+                result= data.getStringExtra("detail_info");
+                if(result.equals("success")){
+                    adsRefresh.autoRefresh();
+                }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("all",result);
+        setResult(RESULT_OK,intent);
+        super.onBackPressed();
     }
 }

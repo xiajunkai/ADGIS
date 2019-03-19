@@ -28,6 +28,8 @@ public class ADsCompanyFragment extends Fragment {
     TextView designer;
     @BindView(R.id.ads_holder)
     TextView holder;
+    ADsDetailActivity aDsDetailActivity;
+    String title;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,8 +41,12 @@ public class ADsCompanyFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ADsDetailActivity aDsDetailActivity = (ADsDetailActivity) getActivity();
-        String title = aDsDetailActivity.getAdsName();
+        aDsDetailActivity = (ADsDetailActivity) getActivity();
+        title = aDsDetailActivity.getAdsName();
+        refresh();
+    }
+
+    private void refresh(){
         BmobQuery<ADCompany> adCompanyBmobQuery = new BmobQuery<>();
         adCompanyBmobQuery.addWhereEqualTo("name",title);
         adCompanyBmobQuery.findObjects(new FindListener<ADCompany>() {
@@ -54,5 +60,13 @@ public class ADsCompanyFragment extends Fragment {
                 }
             }
         });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        String s = aDsDetailActivity.getIsEdit();
+        if(s.equals("success")){
+            refresh();
+        }
     }
 }

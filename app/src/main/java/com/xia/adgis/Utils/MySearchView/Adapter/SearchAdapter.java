@@ -66,7 +66,7 @@ public class SearchAdapter extends BaseAdapter{
     private void convert(ViewHolder holder, final int position) {
         holder.setImageResource(R.id.item_search_icon,mData.get(position).url)
                 .setText(R.id.item_search_title,mData.get(position).title)
-                .setText(R.id.item_search_content,"待完善");
+                .setText(R.id.item_search_content,mData.get(position).content);
         final ImageView image = holder.getIcon(R.id.item_search_icon);
         image.setOnClickListener(new View.OnClickListener() {
             @Override
