@@ -155,8 +155,6 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, mDestinationUri));
         //拍照临时照片
         mTempPhotoPath = Environment.getExternalStorageDirectory() + File.separator + "photo.jpeg";
-        //用户照片(即使不更改头像仍然能够进行编辑)
-        imagePath = user.getUserIcon();
         //初始化toolbar
         initToolBar();
         //初始化加载对话框
@@ -645,7 +643,6 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         String area = editArea.getText().toString();
         String sex = editSex.getText().toString();
         String birthday = editBirthday.getText().toString();
-        String phone = editPhone.getText().toString();
         String email = editMail.getText().toString();
         String motto = editMotte.getText().toString();
 
@@ -677,13 +674,13 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
 
         //修改信息(判断头像是否已经修改)
         if(isIcon){
-            saveUserAndIcon(nickName,area,sex,birthday,phone,email,motto);
+            saveUserAndIcon(nickName,area,sex,birthday,email,motto);
         }else{
-            saveUser(nickName,area,sex,birthday,phone,email,motto);
+            saveUser(nickName,area,sex,birthday,email,motto);
         }
     }
     //在最终保存用户时，需要注意的是在上传头像前，需要将前一张头像从服务器中删除，为了节约服务器存储空间
-    private void saveUserAndIcon(final String nickName, final String area, final String sex, final String birthday, final String phone, final String email, final String motto){
+    private void saveUserAndIcon(final String nickName, final String area, final String sex, final String birthday, final String email, final String motto){
         //删除前一次头像文件
         BmobFile lastTimeIcon = new BmobFile();
         lastTimeIcon.setUrl(user.getUserIconUri());
@@ -713,7 +710,6 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
                             newUser.setAddress(area);
                             newUser.setSex(sex);
                             newUser.setBirthday(birthday);
-                            newUser.setMobilePhoneNumber(phone);
                             newUser.setEmailVerified(true);
                             if(!email.equals(user.getEmail())){
                                 newUser.setEmail(email);
@@ -745,13 +741,12 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         });
     }
 
-    private void saveUser(final String nickName, final String area, final String sex, final String birthday, final String phone, final String email, final String motto){
+    private void saveUser(final String nickName, final String area, final String sex, final String birthday,  final String email, final String motto){
         User newUser = new User();
         newUser.setNickName(nickName);
         newUser.setAddress(area);
         newUser.setSex(sex);
         newUser.setBirthday(birthday);
-        newUser.setMobilePhoneNumber(phone);
         if(!email.equals(user.getEmail())){
             newUser.setEmail(email);
         }

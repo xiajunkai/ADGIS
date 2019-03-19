@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.maps.model.LatLng;
+import com.bigkoo.pickerview.TimePickerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -48,13 +51,19 @@ import com.xia.adgis.R;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 public class EditADsActivity extends AppCompatActivity implements View.OnClickListener,PopupWindow.OnDismissListener {
 
@@ -106,6 +115,10 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
     //当前广告牌相关
     AD ad;
     private String adsName;
+    private String objectID_AD;
+    private String objectID_PHY;
+    private String objectID_COM;
+    private String objectID_MAIN;
     /**
      *图像相关
      */
@@ -126,6 +139,11 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
     String imagePath;
     //是否编辑了图像，默认为不编辑
     boolean isIcon = false;
+    //前一次头像文件
+    String lastImage;
+    BmobFile lastTimeImage;
+    //这一次
+    BmobFile thisTimeImage;
     /**
      * 输入简介部分
      */
@@ -136,17 +154,9 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
      */
     private static final int LOCATION_REQUEST = 7;
     /**
-     * 编辑物理信息
+     * 选择维护时间
      */
-    private static final int PHYSICAL_REQUEST = 8;
-    /**
-     * 编辑公司信息
-     */
-    private static final int COMPANY_REQUEST = 9;
-    /**
-     * 编辑维护信息
-     */
-    private static final int MAINTAIN_REQUEST = 10;
+    TimePickerView mTimePickerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,6 +170,8 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
         loadingMessage();
         //图片变量初始化
         initImageVar();
+        //时间选择
+        initTimePicker();
         //注册点击监听
         registerClick();
     }
@@ -194,8 +206,10 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
                     editBrief.setText(ad.getBrief());
                     editLongitude.setText(String.valueOf(ad.getLongitude()));
                     editLatitude.setText(String.valueOf(ad.getLatitude()));
-                    //用户照片(即使不更改图像仍然能够进行编辑)
-                    imagePath = ad.getImageID();
+                    //作用于更换图像，储存原来图像路径，方便删除
+                    lastImage = ad.getImageID();
+                    //
+                    objectID_AD = ad.getObjectId();
                     loadingImage();
                 }else {
                     Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -232,6 +246,7 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void done(List<ADphysical> list, BmobException e) {
                 if(e == null){
+                    objectID_PHY = list.get(list.size() - 1).getObjectId();
                     editLength.setText(list.get(list.size() - 1).getLength());
                     editWidth.setText(list.get(list.size() - 1).getWidth());
                     editHeight.setText(list.get(list.size() - 1).getHeight());
@@ -254,6 +269,7 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void done(List<ADCompany> list, BmobException e) {
                 if(e == null){
+                    objectID_COM = list.get(list.size() - 1).getObjectId();
                     editDesigner.setText(list.get(list.size() - 1).getDesigner());
                     editHolder.setText(list.get(list.size() - 1).getHoder());
                     //加载维护信息
@@ -273,6 +289,7 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void done(List<ADmaintain> list, BmobException e) {
                 if(e == null){
+                    objectID_MAIN = list.get(list.size() - 1).getObjectId();
                     editMaintainCompany.setText(list.get(list.size() - 1).getCompany());
                     editContent.setText(list.get(list.size() - 1).getContext());
                     editTime.setText(list.get(list.size() - 1).getTime());
@@ -331,7 +348,7 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
                 maintain.show(getSupportFragmentManager());
                 break;
             case R.id.edit_ads_maintain_time:
-
+                mTimePickerView.show();
                 break;
             default:
                 break;
@@ -553,6 +570,45 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(new Intent(EditADsActivity.this, ConfirmLocationActivity.class),LOCATION_REQUEST);
         overridePendingTransition(R.anim.in,R.anim.out);
     }
+
+    /**
+     *  时间选择
+     */
+    private void initTimePicker(){
+        Calendar selectedDate = Calendar.getInstance();
+        Calendar startDate = Calendar.getInstance();
+        Calendar endDate = Calendar.getInstance();
+        endDate.set(2026,0,0);
+        //时间选择器
+        mTimePickerView = new TimePickerView.Builder(EditADsActivity.this, new TimePickerView.OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date, View v) {
+                editTime.setText(getTime(date));
+            }
+        })
+                //年月日时分秒 的显示与否，不设置则默认全部显示
+                .setType(new boolean[]{true, true, true, true, false, false})
+                //设置显示标签
+                .setLabel("年","月","日","时",null,null)
+                .setTitleText("选择维护时间")
+                .setDividerColor(Color.BLACK)
+                //滚轮字体大小
+                .setContentSize(20)
+                //两横线之间间隔倍数1.2 ~ 2
+                .setLineSpacingMultiplier(2.0f)
+                .isCyclic(false)
+                .setDate(selectedDate)
+                .setRangDate(startDate,endDate)
+                //设置为true则只有中间部分显示标签
+                .isCenterLabel(true)
+                .build();
+    }
+
+    //获取时间
+    private String getTime(Date date){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH");
+        return format.format(date);
+    }
     //保存选项
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -567,12 +623,214 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
                 onBackPressed();
                 break;
             case R.id.ads_save:
-
+                saveADsModify();
                 break;
         }
         return true;
     }
 
+    private void saveADsModify(){
+        //综合信息
+        String brief = editBrief.getText().toString();
+        double latitude = Double.valueOf(editLatitude.getText().toString());
+        double longitude = Double.valueOf(editLongitude.getText().toString());
+        //物理信息
+        String length = editLength.getText().toString();
+        String width = editWidth.getText().toString();
+        String height = editHeight.getText().toString();
+        String material = editMaterial.getText().toString();
+        //公司信息
+        String designer = editDesigner.getText().toString();
+        String holder = editHolder.getText().toString();
+        //维护信息
+        String company = editMaintainCompany.getText().toString();
+        String content = editContent.getText().toString();
+        String time = editTime.getText().toString();
+        if (TextUtils.isEmpty(brief)){
+            Toast.makeText(this, "简介不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(length)){
+            Toast.makeText(this, "长度不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(width)){
+            Toast.makeText(this, "宽度不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(height)){
+            Toast.makeText(this, "高度不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(material)){
+            Toast.makeText(this, "材料不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(designer)){
+            Toast.makeText(this, "设计者不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(holder)){
+            Toast.makeText(this, "持有者不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(company)){
+            Toast.makeText(this, "维护公司不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(content)){
+            Toast.makeText(this, "维护内容不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(time)){
+            Toast.makeText(this, "维护时间不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        loading.setMessage("修改信息中");
+        loading.show();
+        //修改信息
+        if (isIcon) {
+            saveADsAndIcon(brief,latitude,longitude,length,width,height,material,designer,holder,company,content,time);
+        } else {
+            upgradeADs(brief,latitude,longitude,length,width,height,material,designer,holder,company,content,time);
+        }
+    }
+
+    //这是修改了图像的用户保存，需要获取当前图像网络路径，删除后再上传新图片，节省服务器存储空间
+    private void saveADsAndIcon(final String brief, final double latitude, final double longitude,
+                                final String length, final String width, final String height, final String material,
+                                final String designer, final String holder,
+                                final String company, final String content, final String time){
+        //删除前一次图片文件
+        lastTimeImage = new BmobFile();
+        lastTimeImage.setUrl(lastImage);
+        lastTimeImage.delete(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    thisTimeImage = new BmobFile(new File(imagePath));
+                    thisTimeImage.uploadblock(new UploadFileListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if(e == null){
+                                //更新信息
+                                upgradeADsAndImage(brief,latitude,longitude,length,width,height,material,designer,holder,company,content,time);
+                            }else {
+                                Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                loading.dismiss();
+                            }
+                        }
+                    });
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
+    //更新广告牌信息
+    private void upgradeADs(String brief, double latitude, double longitude,
+                            final String length, final String width, final String height, final String material,
+                            final String designer, final String holder,
+                            final String company, final String content, final String time){
+        AD ad = new AD();
+        ad.setBrief(brief);
+        ad.setLatitude(latitude);
+        ad.setLongitude(longitude);
+        ad.update(objectID_AD, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    upgradePhysical(length,width,height,material,designer,holder,company,content,time);
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
+    //更新广告牌信息(包含图像)
+    private void upgradeADsAndImage(String brief, double latitude, double longitude,
+                            final String length, final String width, final String height, final String material,
+                            final String designer, final String holder,
+                            final String company, final String content, final String time){
+        AD ad = new AD();
+        ad.setBrief(brief);
+        ad.setLatitude(latitude);
+        ad.setLongitude(longitude);
+        ad.setImageID(thisTimeImage.getFileUrl());
+        ad.update(objectID_AD, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    upgradePhysical(length,width,height,material,designer,holder,company,content,time);
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
+    //更新物理信息
+    private void upgradePhysical(String length, String width, String height, String material,
+                                 final String designer, final String holder,
+                                 final String company, final String content, final String time){
+        ADphysical phy = new ADphysical();
+        phy.setLength(length);
+        phy.setWidth(width);
+        phy.setHeight(height);
+        phy.setMaterial(material);
+        phy.update(objectID_PHY, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    upgradeCompany(designer,holder,company,content,time);
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
+
+    //更新公司信息
+    private void upgradeCompany(String designer, String holder,
+                                final String company, final String content, final String time){
+        ADCompany com = new ADCompany();
+        com.setDesigner(designer);
+        com.setHoder(holder);
+        com.update(objectID_COM, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    upgradeMaintain(company,content,time);
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
+
+    //更新维护信息
+    private void upgradeMaintain(String company, String content, String time){
+        ADmaintain main = new ADmaintain();
+        main.setCompany(company);
+        main.setContext(content);
+        main.setTime(time);
+        main.update(objectID_MAIN, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e == null){
+                    Toast.makeText(EditADsActivity.this, "信息更新成功！", Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }else {
+                    Toast.makeText(EditADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
+                }
+            }
+        });
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();

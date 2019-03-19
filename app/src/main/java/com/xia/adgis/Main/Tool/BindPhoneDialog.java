@@ -164,8 +164,9 @@ public class BindPhoneDialog extends BaseBottomDialog {
 
     private void bindMobilePhone(final String phone){
         User user = new User();
-        user.setMobilePhoneNumberVerified(true);
         User cur = BmobUser.getCurrentUser(User.class);
+        user.setMobilePhoneNumberVerified(true);
+        user.setMobilePhoneNumber(phone);
         user.update(cur.getObjectId(), new UpdateListener() {
             @Override
             public void done(BmobException e) {
