@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.xia.adgis.Main.Activity.ADsDetailActivity;
+import com.xia.adgis.Main.Activity.AllADsActivity;
 import com.xia.adgis.Main.Bean.AD;
 import com.xia.adgis.R;
 
@@ -59,7 +60,7 @@ public class ADsAdapter extends RecyclerView.Adapter<ADsAdapter.ViewHolder>{
                 int position = holder.getAdapterPosition();
                 intent.putExtra("data", mADList.get(position).getName());
 
-                ActivityCompat.startActivity(mContext,intent,
+                ActivityCompat.startActivityForResult((AppCompatActivity)mContext,intent, AllADsActivity.EDIT_ADS,
                         ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 (AppCompatActivity)mContext,
                                 new Pair<>(v, "detail_image"))

@@ -53,6 +53,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.xia.adgis.App;
 import com.xia.adgis.CropCircleActivity;
 import com.xia.adgis.Main.Tool.BindPhoneDialog;
+import com.xia.adgis.Main.Tool.UpgradeAdminDialog;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
 
@@ -96,6 +97,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
     EditText editMotte;
     @BindView(R.id.edit_Textcount_text)
     TextView editCount;
+
     @BindView(R.id.edit_photo_image)
     CircleImageView editPhotoImage;
     @BindView(R.id.huadong)
@@ -225,7 +227,6 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
                     public void onLoadStarted(Drawable placeholder) {
                         super.onLoadStarted(placeholder);
                         loading.show();
-                        loadingMessage();
                     }
 
                     @Override
@@ -623,6 +624,13 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.upgrade_admin:
+                if(user.isAdmin()){
+                    Toast.makeText(this, "你已经是管理员账户了！", Toast.LENGTH_SHORT).show();
+                }else {
+                    upgradeAdmin();
+                }
+                break;
             case R.id.save:
                 saveUserModify();
                 break;
@@ -764,6 +772,12 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
             }
         });
     }
+
+    //申请升级管理员
+    private void upgradeAdmin(){
+        UpgradeAdminDialog upgradeAdminDialog = new UpgradeAdminDialog();
+        upgradeAdminDialog.show(getSupportFragmentManager());
+    }
     @Override
     public ISwipeBackActivity getPreActivity() {
         return (ISwipeBackActivity) App.getInstance().getStack().getBackActivity();
@@ -776,6 +790,10 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         if (mAMapLocationClient != null) {
             mAMapLocationClient.stopLocation();
         }
+    }
+
+    public TextView getEditPhone() {
+        return editPhone;
     }
 
 }

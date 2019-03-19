@@ -5,9 +5,14 @@
     tools:context=".Main.Activity.UserCentreActivity">
 
     <item
-        android:id="@+id/leave_message"
+        android:id="@+id/ads_detail_edit"
+        android:title="编辑"
+        android:icon="@drawable/detail_edit"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/ads_detail_message"
         android:title="留言"
-        android:icon="@drawable/ic_message"
+        android:icon="@drawable/detail_message"
         app:showAsAction="always"/>
 
 </menu>

@@ -121,8 +121,7 @@ public class ConfirmLocationActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("location_info", lng);
         setResult(RESULT_OK, intent);
-        finish();
-        overridePendingTransition(R.anim.in_1,R.anim.out_1);
+        onBackPressed();
     }
     //初始化定位相关
     private void initLocation() {
@@ -207,5 +206,9 @@ public class ConfirmLocationActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.in_1,R.anim.out_1);
+    }
 }

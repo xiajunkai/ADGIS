@@ -573,6 +573,7 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
             user.setBirthday("未知");
             user.setAddress("未编辑");
             user.setUserIconUri(mDelete);
+            user.setAdmin(false);
             user.signUp(new SaveListener<User>() {
                 @Override
                 public void done(User user, BmobException e) {

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:ignore="HardcodedText">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#f4f1f1">
+
+        <TextView
+            android:id="@+id/cancel_admin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:textSize="15sp"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="取消" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:layout_weight="2"
+            android:text="升级为管理员"
+            android:textColor="@color/black"
+            android:gravity="center"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/confirm_admin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:textSize="15sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="确定"
+            tools:ignore="HardcodedText"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#a5d1a5" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginBottom="15dp">
+
+        <com.flyco.roundview.RoundLinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:background="#ffffff"
+            app:rv_strokeColor="#cccccc"
+            app:rv_strokeWidth="@dimen/division_line"
+            app:rv_cornerRadius="5dp"
+            android:layout_marginEnd="15dp">
+            <com.xia.adgis.Utils.ClearEditText
+                android:id="@+id/invite_code"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="请入邀请码"
+                android:background="#00000000"
+                tools:ignore="HardcodedText"
+                android:padding="10dp"
+                android:gravity="center"
+                android:inputType="number"
+                android:textIsSelectable="true"
+                android:maxLength="4"
+                android:maxLines="1"
+                android:textColor="#ff666666"
+                android:textColorHint="#88b5b5b5"/>
+        </com.flyco.roundview.RoundLinearLayout>
+        <TextView
+            android:id="@+id/admin_send"
+            android:layout_width="0dp"
+            android:clickable="true"
+            android:background="@drawable/main_button"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/white"
+            android:text="发送邀请码"
+            tools:ignore="HardcodedText"/>
+    </LinearLayout>
+
+</LinearLayout>

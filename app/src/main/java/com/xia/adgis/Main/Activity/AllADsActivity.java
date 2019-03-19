@@ -38,6 +38,8 @@ public class AllADsActivity extends AppCompatActivity {
     FloatingActionButton addADs;
     private List<AD> adList = new ArrayList<>();
     private ADsAdapter adapter;
+    //回调请求码
+    public static final int EDIT_ADS = 20;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,12 +96,6 @@ public class AllADsActivity extends AppCompatActivity {
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
         //先判断是否有缓存
-        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
-        if(isCache){
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
-        }else{
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
-        }
         adBmobQuery.findObjects(new FindListener<AD>() {
             @Override
             public void done(List<AD> list, BmobException e) {
@@ -123,5 +119,15 @@ public class AllADsActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.in,R.anim.out);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == EDIT_ADS){
+            if (resultCode == RESULT_OK){
+                //String s = data.getStringExtra("detail_info");
+                //Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

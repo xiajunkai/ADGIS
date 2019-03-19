@@ -57,7 +57,6 @@
                             android:layout_marginEnd="10dp"
                             android:layout_marginTop="10dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/userback"
                             android:layout_toStartOf="@+id/add_ads_right"
                             android:contentDescription="@string/app_name" />
 

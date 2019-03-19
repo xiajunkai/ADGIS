@@ -359,7 +359,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
     //保存选项
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.user_edit,menu);
+        getMenuInflater().inflate(R.menu.ads_add,menu);
         return true;
     }
 
@@ -370,7 +370,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                 finish();
                 overridePendingTransition(R.anim.in_1,R.anim.out_1);
                 break;
-            case R.id.save:
+            case R.id.ads_save:
                 SaveADs();
                 break;
         }

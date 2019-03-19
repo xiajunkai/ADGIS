@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bottomdialog.BaseBottomDialog;
+import com.xia.adgis.Main.Activity.EditUserActivity;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
 import com.xia.adgis.Register.check.PhoneCheck;
@@ -22,7 +23,6 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
-
 
 public class BindPhoneDialog extends BaseBottomDialog {
 
@@ -40,7 +40,7 @@ public class BindPhoneDialog extends BaseBottomDialog {
     ProgressDialog progress;
     @Override
     public int getLayoutRes() {
-        return R.layout.bind_phone_bottom_dialod;
+        return R.layout.bind_phone_bottom_dialog;
     }
 
     @Override
@@ -116,8 +116,8 @@ public class BindPhoneDialog extends BaseBottomDialog {
             Send.setEnabled(true);
         }
     }
-    //验证验证码
 
+    //验证验证码
     private void verifyOrBind(){
         final String phone = Phone.getText().toString();
         String code = Code.getText().toString();
@@ -164,7 +164,6 @@ public class BindPhoneDialog extends BaseBottomDialog {
 
     private void bindMobilePhone(final String phone){
         User user = new User();
-        user.setMobilePhoneNumber(phone);
         user.setMobilePhoneNumberVerified(true);
         User cur = BmobUser.getCurrentUser(User.class);
         user.update(cur.getObjectId(), new UpdateListener() {
@@ -172,6 +171,9 @@ public class BindPhoneDialog extends BaseBottomDialog {
             public void done(BmobException e) {
                 if(e == null){
                     Toast.makeText(getActivity(), "手机号更换成功", Toast.LENGTH_SHORT).show();
+                    //在主界面上更新
+                    EditUserActivity editUserActivity = (EditUserActivity) getActivity();
+                    editUserActivity.getEditPhone().setText(phone);
                     progress.dismiss();
                     dismiss();
                 }else{

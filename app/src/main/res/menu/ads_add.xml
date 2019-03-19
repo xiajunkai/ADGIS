@@ -2,16 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Main.Activity.EditUserActivity">
+    tools:context=".Main.Activity.AddAdsActivity">
 
     <item
-        android:id="@+id/upgrade_admin"
-        android:title="升级管理员"
-        android:icon="@drawable/ic_admin"
-        app:showAsAction="always"
-        />
-    <item
-        android:id="@+id/save"
+        android:id="@+id/ads_save"
         android:title="编辑"
         android:icon="@drawable/ic_check"
         app:showAsAction="always"/>

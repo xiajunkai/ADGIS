@@ -108,7 +108,9 @@
             android:name=".Main.Activity.AddAdsActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
-        <activity android:name=".Main.Activity.EditADsActivity" />
+        <activity android:name=".Main.Activity.EditADsActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"/>
         <activity android:name=".Main.Activity.ConfirmLocationActivity" />
         <activity android:name=".CropActivity"></activity>
     </application>

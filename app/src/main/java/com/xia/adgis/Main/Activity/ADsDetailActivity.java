@@ -60,6 +60,8 @@ import cn.bmob.v3.listener.SaveListener;
 
 public class ADsDetailActivity extends AppCompatActivity {
 
+    //请求码
+    private final static int EDIT = 50;
     @BindView(R.id.detailDrag)
     DragScrollDetailsLayout mDragScrollDetailsLayout;
     @BindView(R.id.imageDetail)
@@ -305,13 +307,24 @@ public class ADsDetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.leave_message:
+            case R.id.ads_detail_edit:
+                user = BmobUser.getCurrentUser(User.class);
+                if(user.isAdmin()){
+                    Intent intent = new Intent(new Intent(ADsDetailActivity.this, EditADsActivity.class));
+                    intent.putExtra("ads_name",adsName);
+                    startActivityForResult(intent,EDIT);
+                    overridePendingTransition(R.anim.in, R.anim.out);
+                }else {
+                    Toast.makeText(this, "您不是管理员账户，无法编辑当前广告牌！", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.ads_detail_message:
                 LeaveMessage();
                 break;
         }
         return true;
     }
-
+    //留言
     private void LeaveMessage(){
         //获取当前留言用户
         user = BmobUser.getCurrentUser(User.class);
@@ -360,5 +373,13 @@ public class ADsDetailActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        //intent.putExtra("detail_info","look");
+        setResult(RESULT_OK,intent);
+        super.onBackPressed();
     }
 }

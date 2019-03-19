@@ -86,6 +86,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     private static final int SEARCH = 1;
     private static final int SETTING = 2;
     private static final int USER_CENTRE = 3;
+    private static final int ALL_ADS = 4;
     //需点击隐藏的UI控件
     @BindView(R.id.fullscreen_content_controls)
     View mControlsView;
@@ -145,7 +146,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     private boolean isDrawer = false;
     //左侧侧滑内部控件
     TextView username;
-    TextView usermail;
+    TextView userAdmin;
     CircleImageView icon;
     //右侧滑栏
     @BindView(R.id.right_nav_view)
@@ -674,10 +675,13 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             public boolean onNavigationItemSelected(@NonNull android.view.MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.All_ADs:
-                        //Intent intent = new Intent(MainActivity.this,AllADsActivity.class);
-                        //startActivity(intent);
-                        startActivity(new Intent(MainActivity.this,AllADsActivity.class));
-                        overridePendingTransition(R.anim.in,R.anim.out);
+                        if(user.isAdmin()) {
+                            startActivityForResult(new Intent(MainActivity.this, AllADsActivity.class), ALL_ADS);
+                            overridePendingTransition(R.anim.in,R.anim.out);
+                        }else {
+                            Toast.makeText(MainActivity.this, "您不是管理员，无法查看该界面！", Toast.LENGTH_SHORT).show();
+                            drawer.closeDrawer(Gravity.START);
+                        }
                         break;
                     case R.id.setting:
                         Intent intent = new Intent(MainActivity.this,SettingActivity.class);
@@ -727,9 +731,13 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         View headView = left.getHeaderView(0);
         username = (TextView) headView.findViewById(R.id.username);
         username.setText(user.getUsername());
-        //用户邮箱
-        usermail = (TextView) headView.findViewById(R.id.mail);
-        usermail.setText(user.getEmail());
+        //是否是管理员账户
+        userAdmin = (TextView) headView.findViewById(R.id.mail);
+        if (user.isAdmin()){
+            userAdmin.setText("管理员账户");
+        }else {
+            userAdmin.setText("非管理员账户");
+        }
         //加载用户头像
         icon = (CircleImageView) headView.findViewById(R.id.icon_image);
         Glide.with(this).load(user.getUserIcon()).into(icon);
@@ -1039,8 +1047,13 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                             });
                                 }
                             });
-                    //用户邮箱
-                    usermail.setText(user.getEmail());
+                    //是否是管理员
+                    if(user.isAdmin()){
+                        userAdmin.setText("管理员账户");
+                    }else {
+                        userAdmin.setText("非管理员账户");
+                    }
+
                 }
         }
     }

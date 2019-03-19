@@ -13,6 +13,7 @@ public class User extends BmobUser {
     private String birthday;
     private String address;
     private String userIconUri;
+    private Boolean isAdmin;
 
     public String getUserIconUri() {
         return userIconUri;
@@ -68,5 +69,13 @@ public class User extends BmobUser {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
     }
 }
