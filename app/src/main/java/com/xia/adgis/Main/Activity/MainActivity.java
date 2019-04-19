@@ -57,6 +57,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.swipeback.SwipeBackActivityImpl;
+import com.xia.adgis.Admin.Activity.AdminActivity;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.Main.Bean.AD;
 import com.xia.adgis.Main.Tool.StatusBarUtil;
@@ -429,29 +430,15 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     }
     //刷新地图数据
     private void RefreshMapData(){
-        progressDialog.show();
+        //progressDialog.show();
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        //先判断是否有缓存
         adBmobQuery.findObjects(new FindListener<AD>() {
             @Override
             public void done(List<AD> list, BmobException e) {
                 if(e == null) {
                     bmobData = list;
                     addMarksToMap(list);
-                    tempImage = getImage(title);
-                    //图片加载
-                    progressDialog.setCancelable(false);
-                    progressDialog.setMessage("加载中");
-                    Glide.with(MainActivity.this).
-                            load(tempImage).
-                            into(new GlideDrawableImageViewTarget(locationImage){
-                                @Override
-                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                    super.onResourceReady(resource, animation);
-                                    progressDialog.dismiss();
-                                }
-                            });
                 }else {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
@@ -874,7 +861,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                         overridePendingTransition(R.anim.in,R.anim.out);
                         break;
                     case R.id.aboutUs_menu:
-
+                        startActivity(new Intent(MainActivity.this, AboutMeActivity.class));
+                        overridePendingTransition(R.anim.in,R.anim.out);
                         break;
                     case R.id.exit:
                         finish();
@@ -919,9 +907,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         //是否是管理员账户
         userAdmin = (TextView) headView.findViewById(R.id.mail);
         if (user.isAdmin()){
-            userAdmin.setText("管理员账户");
+            userAdmin.setText("商家账户");
         }else {
-            userAdmin.setText("非管理员账户");
+            userAdmin.setText("普通账户");
         }
         //加载用户头像
         icon = (CircleImageView) headView.findViewById(R.id.icon_image);
@@ -1091,9 +1079,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                             });
                     //是否是管理员
                     if(user.isAdmin()){
-                        userAdmin.setText("管理员账户");
+                        userAdmin.setText("商家账户");
                     }else {
-                        userAdmin.setText("非管理员账户");
+                        userAdmin.setText("普通账户");
                     }
                 }
                 break;

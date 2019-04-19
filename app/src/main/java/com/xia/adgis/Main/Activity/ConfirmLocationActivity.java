@@ -152,7 +152,7 @@ public class ConfirmLocationActivity extends AppCompatActivity {
 
                         //然后可以移动到定位点,使用animateCamera就有动画效果
                         mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                                latLng, 15, 45, 0)), 500, null);
+                                latLng, 15, 0, 0)), 500, null);
                     } else {
                         //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                         Toast.makeText(ConfirmLocationActivity.this, "location Error, ErrCode:" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo(), Toast.LENGTH_SHORT).show();

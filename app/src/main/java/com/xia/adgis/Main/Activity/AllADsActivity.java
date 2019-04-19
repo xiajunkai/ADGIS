@@ -15,6 +15,7 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.xia.adgis.Main.Adapter.ADsAdapter;
 import com.xia.adgis.Main.Bean.AD;
 import com.xia.adgis.R;
+import com.xia.adgis.Register.Bean.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
@@ -39,20 +41,23 @@ public class AllADsActivity extends AppCompatActivity {
     private List<AD> adList = new ArrayList<>();
     private ADsAdapter adapter;
     //回调请求码
+    public static final int ADD_ADS = 30;
     public static final int EDIT_ADS = 20;
     private String result = "fail";
+    //当前用户
+    User user = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_ads);
         ButterKnife.bind(this);
+        user = BmobUser.getCurrentUser(User.class);
         adsToolbar.setTitle("管理广告");
         setSupportActionBar(adsToolbar);
         adsToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
-                overridePendingTransition(R.anim.in_1,R.anim.out_1);
+                onBackPressed();
             }
         });
         adsRefresh.setOnRefreshListener(new OnRefreshListener() {
@@ -70,13 +75,7 @@ public class AllADsActivity extends AppCompatActivity {
     private void initADs() {
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        //先判断是否有缓存
-        boolean isCache = adBmobQuery.hasCachedResult(AD.class);
-        if(isCache){
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);	// 先从缓存取数据，如果没有的话，再从网络取。
-        }else{
-            adBmobQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);	// 如果没有缓存的话，则先从网络中取
-        }
+        adBmobQuery.addWhereEqualTo("editor",user.getUsername());
         adBmobQuery.findObjects(new FindListener<AD>() {
             @Override
             public void done(List<AD> list, BmobException e) {
@@ -96,7 +95,7 @@ public class AllADsActivity extends AppCompatActivity {
     private void refreshADs(){
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        //先判断是否有缓存
+        adBmobQuery.addWhereEqualTo("editor",user.getUsername());
         adBmobQuery.findObjects(new FindListener<AD>() {
             @Override
             public void done(List<AD> list, BmobException e) {
@@ -116,7 +115,7 @@ public class AllADsActivity extends AppCompatActivity {
         addADs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AllADsActivity.this, AddAdsActivity.class));
+                startActivityForResult(new Intent(AllADsActivity.this, AddAdsActivity.class),ADD_ADS);
                 overridePendingTransition(R.anim.in,R.anim.out);
             }
         });
@@ -124,9 +123,14 @@ public class AllADsActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == EDIT_ADS){
-            if (resultCode == RESULT_OK){
+        if(resultCode == RESULT_OK){
+            if (requestCode == EDIT_ADS){
                 result= data.getStringExtra("detail_info");
+                if(result.equals("success")){
+                    adsRefresh.autoRefresh();
+                }
+            }else if(requestCode == ADD_ADS){
+                result= data.getStringExtra("add_ad");
                 if(result.equals("success")){
                     adsRefresh.autoRefresh();
                 }
@@ -140,5 +144,13 @@ public class AllADsActivity extends AppCompatActivity {
         intent.putExtra("all",result);
         setResult(RESULT_OK,intent);
         super.onBackPressed();
+    }
+
+    public RefreshLayout getAdsRefresh() {
+        return adsRefresh;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

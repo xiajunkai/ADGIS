@@ -208,7 +208,7 @@
                         android:id="@+id/confirm_password"
                         android:layout_width="match_parent"
                         android:clickable="true"
-                        android:background="@drawable/cancel_buttom"
+                        android:background="@drawable/cancel_button"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:layout_marginStart="10dp"

@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xia.adgis.Admin.Activity.AdminActivity;
 import com.xia.adgis.Login.Adapter.UserNameHistoryAdapter;
 import com.xia.adgis.Login.DataBase.UserSqliteHelper;
 import com.xia.adgis.Main.Activity.ForgetPassWordActivity;
@@ -231,7 +232,7 @@ public class LoginActivity extends AppCompatActivity {
             while (cursor.moveToNext()){
                 usernames.add(cursor.getString(cursor.getColumnIndex("name")));
             }
-
+        cursor.close();
         addEmailsToAutoComplete(usernames);
     }
 
@@ -261,7 +262,6 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
 
             try {
-                Thread.sleep(300);
                 BmobUser.loginByAccountObservable(BmobUser.class,mEmail,mPassword).subscribe(new Subscriber<BmobUser>() {
                     @Override
                     public void onCompleted() {
@@ -298,15 +298,22 @@ public class LoginActivity extends AppCompatActivity {
                             edit.clear();
                             edit.apply();
                         }
-                        Toast.makeText(getBaseContext(), bmobUser.getUsername()+"用户登录成功", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.in,R.anim.out);
-                        finish();
+                        if (bmobUser.getUsername().equals("Admin")){
+                            Toast.makeText(LoginActivity.this, "管理员登陆成功", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                            overridePendingTransition(R.anim.in, R.anim.out);
+                            finish();
+                        }else {
+                            Toast.makeText(getBaseContext(), bmobUser.getUsername() + "用户登录成功", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.in, R.anim.out);
+                            finish();
+                        }
                     }
                 });
 
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 return false;
             }
             return true;

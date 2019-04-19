@@ -18,6 +18,11 @@ public class AD extends BmobObject implements Serializable {
     private String imageID;
     //简介
     private String brief;
+    //添加者
+    private String editor;
+
+    //是否被选中
+    public boolean isSelect;
 
     public double getLatitude() {
         return latitude;
@@ -57,5 +62,21 @@ public class AD extends BmobObject implements Serializable {
 
     public void setBrief(String brief) {
         this.brief = brief;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
+
+    public String getEditor() {
+        return editor;
+    }
+
+    public void setEditor(String editor) {
+        this.editor = editor;
     }
 }

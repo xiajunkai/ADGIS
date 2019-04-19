@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.lljjcoder.style.citylist.Toast.ToastUtils;
+import com.xia.adgis.Admin.Activity.AdminActivity;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.Main.Activity.MainActivity;
 import com.xia.adgis.Register.Bean.User;
@@ -35,6 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
         getWindow().setFormat(PixelFormat.RGBA_8888);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DITHER);
         setContentView(R.layout.activity_welcome);
+
         View decorView = getWindow().getDecorView();
         int option = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -86,15 +88,19 @@ public class WelcomeActivity extends AppCompatActivity {
     private void next(){
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                    User user = BmobUser.getCurrentUser(User.class);
+                User user = BmobUser.getCurrentUser(User.class);
                 if(user == null) {
                     Intent mainIntent = new Intent(WelcomeActivity.this, LoginActivity.class);
                     WelcomeActivity.this.startActivity(mainIntent);
                     overridePendingTransition(R.anim.in,R.anim.out);
                     WelcomeActivity.this.finish();
-                }else{
+                }else if(user.isSuperAdmin()) {
+                    Toast.makeText(WelcomeActivity.this, "管理员欢迎回来", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(WelcomeActivity.this, AdminActivity.class));
+                    overridePendingTransition(R.anim.in,R.anim.out);
+                    WelcomeActivity.this.finish();
+                }else {
                     Toast.makeText(WelcomeActivity.this,user.getUsername()+ "欢迎回来",Toast.LENGTH_SHORT).show();
-                    //ToastUtils.showLongToast(WelcomeActivity.this,user.getUsername()+ "欢迎回来");
                     Intent mainIntent = new Intent(WelcomeActivity.this, MainActivity.class);
                     WelcomeActivity.this.startActivity(mainIntent);
                     overridePendingTransition(R.anim.in,R.anim.out);

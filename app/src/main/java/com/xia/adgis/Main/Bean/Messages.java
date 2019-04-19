@@ -9,6 +9,7 @@ public class Messages extends BmobObject implements Serializable {
     private String adName;
     private String userName;
     private String content;
+    public boolean isSelect;
 
     public String getAdName() {
         return adName;
@@ -32,5 +33,13 @@ public class Messages extends BmobObject implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
     }
 }

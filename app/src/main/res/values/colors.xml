@@ -30,4 +30,5 @@
     <color name="translucent">#00000000</color>
     <color name="item_press">#99dfdbdb</color>
     <color name="item_normal">#fff</color>
+    <color name="color_b7b8bd">#b7b8bd</color>
 </resources>

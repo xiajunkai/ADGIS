@@ -105,6 +105,8 @@ public class ADsDetailActivity extends AppCompatActivity {
     TabAdapter adapter;
     //当前查看广告牌名称
     private String adsName;
+    //当前广告牌发布者
+    private String adsEditor;
     //当前留言用户
     User user;
     //留言是否成功
@@ -219,6 +221,7 @@ public class ADsDetailActivity extends AppCompatActivity {
                     detailBiref.setText(list.get(list.size() - 1).getBrief());
                     String last = getString(R.string.front) + list.get(list.size() - 1).getUpdatedAt();
                     lastTime.setText(last);
+                    adsEditor = list.get(list.size() - 1).getEditor();
                     imageID = list.get(list.size() - 1).getImageID();
                     ProgressInterceptor.addListener(imageID, new ProgressListener() {
                         @Override
@@ -313,12 +316,16 @@ public class ADsDetailActivity extends AppCompatActivity {
             case R.id.ads_detail_edit:
                 user = BmobUser.getCurrentUser(User.class);
                 if(user.isAdmin()){
-                    Intent intent = new Intent(new Intent(ADsDetailActivity.this, EditADsActivity.class));
-                    intent.putExtra("ads_name",adsName);
-                    startActivityForResult(intent,EDIT);
-                    overridePendingTransition(R.anim.in, R.anim.out);
+                    if(user.getUsername().equals(adsEditor)){
+                        Intent intent = new Intent(new Intent(ADsDetailActivity.this, EditADsActivity.class));
+                        intent.putExtra("ads_name",adsName);
+                        startActivityForResult(intent,EDIT);
+                        overridePendingTransition(R.anim.in, R.anim.out);
+                    } else {
+                        Toast.makeText(this, "当前广告牌不是您发布的，无法编辑当前广告牌！", Toast.LENGTH_SHORT).show();
+                    }
                 }else {
-                    Toast.makeText(this, "您不是管理员账户，无法编辑当前广告牌！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "您不是商家账户，无法编辑当前广告牌！", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.ads_detail_message:

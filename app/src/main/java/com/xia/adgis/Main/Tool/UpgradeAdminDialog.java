@@ -122,7 +122,7 @@ public class UpgradeAdminDialog extends BaseBottomDialog {
                 @Override
                 public void done(BmobException e) {
                     if (e == null){
-                        Toast.makeText(getActivity(), "管理员升级成功！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "升级商家用户成功！", Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                         dismiss();
                     }else {

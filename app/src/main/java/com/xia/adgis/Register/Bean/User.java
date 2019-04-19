@@ -14,6 +14,8 @@ public class User extends BmobUser {
     private String address;
     private String userIconUri;
     private Boolean isAdmin;
+    private Boolean isSuperAdmin;
+    public boolean isSelect;
 
     public String getUserIconUri() {
         return userIconUri;
@@ -77,5 +79,21 @@ public class User extends BmobUser {
 
     public void setAdmin(Boolean admin) {
         isAdmin = admin;
+    }
+
+    public Boolean isSuperAdmin() {
+        return isSuperAdmin;
+    }
+
+    public void setSuperAdmin(Boolean superAdmin) {
+        isSuperAdmin = superAdmin;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
     }
 }

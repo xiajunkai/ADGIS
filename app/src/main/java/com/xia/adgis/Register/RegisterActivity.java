@@ -149,7 +149,7 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
     private void initIconPicker(){
         //头像弹窗弹出位置
         int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        navigationHeight = getResources().getDimensionPixelSize(resourceId);
+        //navigationHeight = getResources().getDimensionPixelSize(resourceId);
         //得到文件存储路径
         String filename = "cropImage.jpeg";
         //目标路径
@@ -227,7 +227,10 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
             public void onClick(View view) {
                 if(image.equals("1")){
                     Toast.makeText(RegisterActivity.this, "请选择图片", Toast.LENGTH_SHORT).show();
-                }else{
+                }else if(imagePath.equals("1")){
+                    Toast.makeText(RegisterActivity.this, "请选择图片", Toast.LENGTH_SHORT).show();
+                }
+                else{
                     //头像上传显示加载框(并且无法触摸退出)
                     loading.setTitle("上传头像");
                     loading.setMessage("上传中");
@@ -574,6 +577,9 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
             user.setAddress("未编辑");
             user.setUserIconUri(mDelete);
             user.setAdmin(false);
+            user.setSuperAdmin(false);
+            //手机未验证
+            user.setMobilePhoneNumberVerified(false);
             user.signUp(new SaveListener<User>() {
                 @Override
                 public void done(User user, BmobException e) {

@@ -44,7 +44,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/cancel_buttom"
+            android:background="@drawable/cancel_button"
             android:padding="10dp"
             android:text="取消"
             tools:ignore="HardcodedText"

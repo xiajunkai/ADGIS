@@ -38,6 +38,7 @@ import com.xia.adgis.Main.Bean.ADCompany;
 import com.xia.adgis.Main.Bean.ADmaintain;
 import com.xia.adgis.Main.Bean.ADphysical;
 import com.xia.adgis.R;
+import com.xia.adgis.Register.Bean.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,6 +46,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -99,11 +101,14 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
      *选择地址部分
      */
     private static final int LOCATION_REQUEST = 6;
+    //当前用户
+    User user = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_ads);
         ButterKnife.bind(this);
+        user = BmobUser.getCurrentUser(User.class);
         //注册点击监听
         addEditPhoto.setOnClickListener(this);
         addBrief.setOnClickListener(this);
@@ -423,6 +428,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                     ad.setImageID(adsImage.getFileUrl());
                     ad.setLatitude(latitude);
                     ad.setLongitude(longitude);
+                    ad.setEditor(user.getUsername());
                     ad.save(new SaveListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
@@ -456,7 +462,13 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                                                         adMaintain.save(new SaveListener<String>() {
                                                             @Override
                                                             public void done(String s, BmobException e) {
+                                                                Toast.makeText(AddAdsActivity.this, "节点添加成功成功！", Toast.LENGTH_SHORT).show();
                                                                 loading.dismiss();
+                                                                Intent in = new Intent();
+                                                                in.putExtra("add_ad","success");
+                                                                setResult(RESULT_OK,in);
+                                                                onBackPressed();
+
                                                             }
                                                         });
                                                     } else {

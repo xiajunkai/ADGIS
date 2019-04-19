@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Admin.Activity.AdminActivity">
+
+    <item
+        android:id="@+id/admin_logout"
+        android:title="升级管理员"
+        android:icon="@drawable/admin_logout"
+        app:showAsAction="always"
+        />
+</menu>

@@ -20,7 +20,7 @@
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/all_ads_refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:srlEnablePreviewInEditMode="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xia.adgis.Admin.Activity.AdminActivity"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/admin_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/AppTheme.Toolbar" />
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:padding="15dp"
+        app:srlEnableRefresh="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/manage_user"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/main_button"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/admin_imageView_user"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/manage_user"
+                android:contentDescription="@string/app_name" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="管理用户"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/admin_imageView_user"
+                android:layout_marginStart="20dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/manage_ad"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/cancel_button"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/admin_imageView_ad"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/manage_ad"
+                android:contentDescription="@string/app_name" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="管理广告"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/admin_imageView_ad"
+                android:layout_marginStart="20dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/manage_message"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/main_button"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/admin_imageView_message"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/manage_message"
+                android:contentDescription="@string/app_name" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="管理留言"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/admin_imageView_message"
+                android:layout_marginStart="20dp" />
+        </RelativeLayout>
+    </LinearLayout>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+</LinearLayout>

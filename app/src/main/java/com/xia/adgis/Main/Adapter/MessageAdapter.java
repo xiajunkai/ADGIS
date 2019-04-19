@@ -68,7 +68,7 @@ public class MessageAdapter extends BaseAdapter {
         viewHolder.userName.setText(messages.getUserName());
         if(user.getUsername().equals(messages.getUserName())){
             Glide.with(mContext).load(user.getUserIcon())
-                    .thumbnail(0.1f).into(viewHolder.userIcon);
+                    .thumbnail(0.8f).into(viewHolder.userIcon);
         }else {
             BmobQuery<User> userBmobQuery = new BmobQuery<>();
             userBmobQuery.addWhereEqualTo("username", messages.getUserName());

@@ -102,17 +102,23 @@
             android:name=".Main.Activity.ForgetPassWordActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
         <activity android:name=".Main.Activity.ApplicationMessageActivity" />
-        <activity android:name=".Main.Activity.AboutUsActivity" />
+        <activity android:name=".Main.Activity.AboutMeActivity" />
         <activity android:name=".Main.Activity.AllADsActivity" />
         <activity
             android:name=".Main.Activity.AddAdsActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
-        <activity android:name=".Main.Activity.EditADsActivity"
+        <activity
+            android:name=".Main.Activity.EditADsActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
-            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
         <activity android:name=".Main.Activity.ConfirmLocationActivity" />
-        <activity android:name=".CropActivity"></activity>
+        <activity android:name=".CropActivity" />
+        <activity android:name=".Main.Activity.FeedBackActivity" />
+        <activity android:name=".Admin.Activity.ManageUserActivity" />
+        <activity android:name=".Admin.Activity.ManageADsActivity" />
+        <activity android:name=".Admin.Activity.ManageMessagesActivity" />
+        <activity android:name=".Admin.Activity.AdminActivity"></activity>
     </application>
 
 </manifest>

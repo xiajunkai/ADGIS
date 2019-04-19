@@ -624,7 +624,7 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
                 break;
             case R.id.upgrade_admin:
                 if(user.isAdmin()){
-                    Toast.makeText(this, "你已经是管理员账户了！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "你已经是商家账户了！", Toast.LENGTH_SHORT).show();
                 }else {
                     upgradeAdmin();
                 }
