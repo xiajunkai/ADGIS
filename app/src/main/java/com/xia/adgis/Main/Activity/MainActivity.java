@@ -137,7 +137,9 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     public AMapLocationClient mAMapLocationClient;
     public AMapLocationClientOption mAMapLocationClientOption;
     //private MyLocationStyle myLocationStyle;
+    //当前广告牌在数组中位置
     private int tempMarkerId = 0;
+
     private ArrayList<LatLng> tempLatLng = new ArrayList<>();
     private ArrayList<Marker> tempMarker = new ArrayList<>();
     //左侧滑相关
@@ -767,9 +769,17 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                 }else if(infoText.getText().toString().equals("显示所有")){
                     if(tempMarker.size() == 0) {
                         addMarksToMap(bmobData);
+                        /*LatLngBounds bounds = new LatLngBounds.Builder()
+                                .include(new LatLng(bmobData.get(0).getLatitude(), bmobData.get(0).getLongitude()))
+                                .include(new LatLng(bmobData.get(1).getLatitude(), bmobData.get(1).getLongitude()))
+                                .include(new LatLng(bmobData.get(2).getLatitude(), bmobData.get(2).getLongitude()))
+                                .include(new LatLng(bmobData.get(3).getLatitude(), bmobData.get(3).getLongitude())).build();*/
                         LatLngBounds bounds = new LatLngBounds.Builder()
-                                .include(new LatLng(bmobData.get(0).getLatitude(), bmobData.get(0).getLongitude())).include(new LatLng(bmobData.get(1).getLatitude(), bmobData.get(1).getLongitude()))
-                                .include(new LatLng(bmobData.get(2).getLatitude(), bmobData.get(2).getLongitude())).include(new LatLng(bmobData.get(3).getLatitude(), bmobData.get(3).getLongitude())).build();
+                                .include(new LatLng(SearchMinLatitude(tempLatLng), SearchMimLongitude(tempLatLng)))
+                                .include(new LatLng(SearchMaxLatitude(tempLatLng), SearchMimLongitude(tempLatLng)))
+                                .include(new LatLng(SearchMinLatitude(tempLatLng), SearchMaxLongitude(tempLatLng)))
+                                .include(new LatLng(SearchMaxLatitude(tempLatLng), SearchMaxLongitude(tempLatLng)))
+                                .build();
                         mAMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
                         infoIcon.setImageDrawable(null);
                         infoIcon.setImageResource(R.drawable.ic_visibility_off_press);
@@ -1115,7 +1125,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
         }
         return temp;
     }
-    //
+    //搜索界面回调所传递的Marker
     private Marker SearchCorrespondingMarker(LatLng latLng){
         Marker temp = null;
         for(int i = 0; i < tempMarker.size(); i++){
@@ -1125,6 +1135,46 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             }
         }
         return temp;
+    }
+    //寻找最大纬度
+    private double SearchMaxLatitude(List<LatLng> latitude){
+        double max = latitude.get(0).latitude;
+        for(LatLng latlng : latitude){
+            if(latlng.latitude > max){
+                max = latlng.latitude;
+            }
+        }
+        return max;
+    }
+    //寻找最小纬度
+    private double SearchMinLatitude(List<LatLng> latitude){
+        double min = latitude.get(0).latitude;
+        for (LatLng latlng : latitude){
+            if(latlng.latitude < min){
+                min = latlng.latitude;
+            }
+        }
+        return min;
+    }
+    //寻找最大经度
+    private double SearchMaxLongitude(List<LatLng> latitude){
+        double max = latitude.get(0).longitude;
+        for(LatLng latlng : latitude){
+            if(latlng.longitude > max){
+                max = latlng.longitude;
+            }
+        }
+        return max;
+    }
+    //寻找最小经度
+    private double SearchMimLongitude(List<LatLng> latitude){
+        double min = latitude.get(0).longitude;
+        for (LatLng latlng : latitude){
+            if(latlng.longitude < min){
+                min = latlng.longitude;
+            }
+        }
+        return min;
     }
     //这是最底层activity,不需要背景透明
     @Override
