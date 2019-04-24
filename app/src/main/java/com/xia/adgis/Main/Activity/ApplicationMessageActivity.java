@@ -41,7 +41,7 @@ public class ApplicationMessageActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSystemShare(ApplicationMessageActivity.this,"https://github.com/xiajunkai/ADGIS");
+                startSystemShare(ApplicationMessageActivity.this,"https://github.com/xiajunkai/ADGIS/blob/master/app/app-release.apk");
             }
         });
         guide.setOnClickListener(new View.OnClickListener() {
