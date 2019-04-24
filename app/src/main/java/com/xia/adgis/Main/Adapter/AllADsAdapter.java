@@ -38,7 +38,7 @@ import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.UpdateListener;
 
 @SuppressWarnings("unchecked")
-public class ADsAdapter extends RecyclerView.Adapter<ADsAdapter.ViewHolder>{
+public class AllADsAdapter extends RecyclerView.Adapter<AllADsAdapter.ViewHolder>{
 
     private Context mContext;
 
@@ -54,7 +54,7 @@ public class ADsAdapter extends RecyclerView.Adapter<ADsAdapter.ViewHolder>{
     //删除的图像
     private BmobFile deleteImg;
     //删除留言标志
-    boolean flag;
+    private boolean flag;
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView adImage;
@@ -68,7 +68,7 @@ public class ADsAdapter extends RecyclerView.Adapter<ADsAdapter.ViewHolder>{
         }
     }
 
-    public ADsAdapter(List<AD> adList) {
+    public AllADsAdapter(List<AD> adList) {
         mADList = adList;
     }
 
@@ -82,38 +82,44 @@ public class ADsAdapter extends RecyclerView.Adapter<ADsAdapter.ViewHolder>{
         holder.adImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ADsDetailActivity.class);
-                int position = holder.getAdapterPosition();
-                intent.putExtra("data", mADList.get(position).getName());
+                activity = (AllADsActivity) mContext;
+                //判断是否能点击
+                if (activity.isAdapterClickable()) {
+                    Intent intent = new Intent(mContext, ADsDetailActivity.class);
+                    int position = holder.getAdapterPosition();
+                    intent.putExtra("data", mADList.get(position).getName());
 
-                ActivityCompat.startActivityForResult((AppCompatActivity)mContext,intent, AllADsActivity.EDIT_ADS,
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                (AppCompatActivity)mContext,
-                                new Pair<>(v, "detail_image"))
-                                .toBundle());
+                    ActivityCompat.startActivityForResult((AppCompatActivity) mContext, intent, AllADsActivity.EDIT_ADS,
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    (AppCompatActivity) mContext,
+                                    new Pair<>(v, "detail_image"))
+                                    .toBundle());
+                }
             }
         });
         holder.adImage.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                //加载必要项
                 activity = (AllADsActivity) mContext;
-                loading = new ProgressDialog(mContext);
-                loading.setMessage("删除中...");
-                final int position = holder.getAdapterPosition();
-                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(mContext);
-                deleteDialog.setTitle("删除节点");
-                deleteDialog.setMessage("确定删除“" + mADList.get(position).getName() + "”吗？\n警告，删除后不可恢复！！！");
-                deleteDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        loading.show();
-                        deleteADs(mADList.get(position).getName());
-                        //activity.getAdsRefresh().autoRefresh();
-                    }
-                });
-                deleteDialog.setNegativeButton("取消",null);
-                deleteDialog.show();
+                //判断是否能点击
+                if (activity.isAdapterClickable()) {
+                    //加载必要项
+                    loading = new ProgressDialog(mContext);
+                    loading.setMessage("删除中...");
+                    final int position = holder.getAdapterPosition();
+                    AlertDialog.Builder deleteDialog = new AlertDialog.Builder(mContext);
+                    deleteDialog.setTitle("删除节点");
+                    deleteDialog.setMessage("确定删除“" + mADList.get(position).getName() + "”吗？\n警告，删除后不可恢复！！！");
+                    deleteDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            loading.show();
+                            deleteADs(mADList.get(position).getName());
+                        }
+                    });
+                    deleteDialog.setNegativeButton("取消", null);
+                    deleteDialog.show();
+                }
                 return false;
             }
         });

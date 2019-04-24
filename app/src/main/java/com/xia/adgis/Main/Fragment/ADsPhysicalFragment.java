@@ -57,9 +57,9 @@ public class ADsPhysicalFragment extends Fragment {
             @Override
             public void done(List<ADphysical> list, BmobException e) {
                 if(e == null) {
-                    length.setText(list.get(list.size() - 1).getLength());
-                    width.setText(list.get(list.size() - 1).getWidth());
-                    height.setText(list.get(list.size() - 1).getHeight());
+                    length.setText(list.get(list.size() - 1).getLength() + " cm");
+                    width.setText(list.get(list.size() - 1).getWidth() + " cm");
+                    height.setText(list.get(list.size() - 1).getHeight() + " cm");
                     material.setText(list.get(list.size() - 1).getMaterial());
                 }else {
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();

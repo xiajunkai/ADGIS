@@ -7,19 +7,20 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-import com.xia.adgis.Main.Adapter.ADsAdapter;
+import com.xia.adgis.Main.Adapter.AllADsAdapter;
+import com.xia.adgis.Main.Adapter.ViewAllADsAdapter;
 import com.xia.adgis.Main.Bean.AD;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,20 +40,63 @@ public class AllADsActivity extends AppCompatActivity {
     @BindView(R.id.add_ads)
     FloatingActionButton addADs;
     private List<AD> adList = new ArrayList<>();
-    private ADsAdapter adapter;
+    private AllADsAdapter allADsAdapter;
+    private ViewAllADsAdapter viewAllADsAdapter;
     //回调请求码
     public static final int ADD_ADS = 30;
     public static final int EDIT_ADS = 20;
     private String result = "fail";
     //当前用户
     User user = null;
+    //传递的索引
+    private String userName = null;
+    private String passUserName = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_ads);
         ButterKnife.bind(this);
-        user = BmobUser.getCurrentUser(User.class);
-        adsToolbar.setTitle("管理广告");
+        //选择账户
+        initUser();
+        adsRefresh.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshLayout) {
+                refreshADs(passUserName);
+            }
+        });
+        //添加节点
+        addADs();
+    }
+
+    private void initUser(){
+        user = new User();
+        Intent intent = getIntent();
+        userName = intent.getStringExtra("user_name");
+        if (TextUtils.isEmpty(userName)){
+            user = BmobUser.getCurrentUser(User.class);
+            passUserName = user.getUsername();
+            initToolbar(passUserName);
+            //初始化数据
+            initADs(user.getUsername());
+        } else if(userName.equals("all")){
+            initToolbar(userName);
+            initAllADs();
+            addADs.setVisibility(View.GONE);
+        } else {
+            passUserName = userName;
+            initToolbar(userName);
+            //初始化数据
+            initADs(userName);
+            addADs.setVisibility(View.GONE);
+        }
+    }
+
+    private void initToolbar(String name){
+        if (name.equals("all")){
+            adsToolbar.setTitle("所有广告");
+        }else {
+            adsToolbar.setTitle(name + "发布的广告");
+        }
         setSupportActionBar(adsToolbar);
         adsToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,22 +104,30 @@ public class AllADsActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        adsRefresh.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshLayout) {
-                refreshADs();
-            }
-        });
-        //初始化数据
-        initADs();
-        //添加节点
-        addADs();
     }
 
-    private void initADs() {
+    private void initAllADs(){
         //使用Bmob获取用来标记的信息
         BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        adBmobQuery.addWhereEqualTo("editor",user.getUsername());
+        adBmobQuery.findObjects(new FindListener<AD>() {
+            @Override
+            public void done(List<AD> list, BmobException e) {
+                if(e == null){
+                    adList = list;
+                    GridLayoutManager layoutManager = new GridLayoutManager(AllADsActivity.this, 1);
+                    adsDetail.setLayoutManager(layoutManager);
+                    viewAllADsAdapter = new ViewAllADsAdapter(adList);
+                    adsDetail.setAdapter(viewAllADsAdapter);
+                }else {
+                    Toast.makeText(AllADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    private void initADs(String name) {
+        //使用Bmob获取用来标记的信息
+        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+        adBmobQuery.addWhereEqualTo("editor",name);
         adBmobQuery.findObjects(new FindListener<AD>() {
             @Override
             public void done(List<AD> list, BmobException e) {
@@ -83,8 +135,8 @@ public class AllADsActivity extends AppCompatActivity {
                     adList = list;
                     GridLayoutManager layoutManager = new GridLayoutManager(AllADsActivity.this, 2);
                     adsDetail.setLayoutManager(layoutManager);
-                    adapter = new ADsAdapter(adList);
-                    adsDetail.setAdapter(adapter);
+                    allADsAdapter = new AllADsAdapter(adList);
+                    adsDetail.setAdapter(allADsAdapter);
                 }else {
                     Toast.makeText(AllADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -92,23 +144,43 @@ public class AllADsActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshADs(){
-        //使用Bmob获取用来标记的信息
-        BmobQuery<AD> adBmobQuery = new BmobQuery<>();
-        adBmobQuery.addWhereEqualTo("editor",user.getUsername());
-        adBmobQuery.findObjects(new FindListener<AD>() {
-            @Override
-            public void done(List<AD> list, BmobException e) {
-                if(e == null){
-                    adList.clear();
-                    adList.addAll(list);
-                    adapter.notifyDataSetChanged();
-                    adsRefresh.finishRefresh();
-                }else {
-                    Toast.makeText(AllADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+    private void refreshADs(String name){
+        //查看全部
+        if (name.equals("all")){
+            //使用Bmob获取用来标记的信息
+            BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+            adBmobQuery.findObjects(new FindListener<AD>() {
+                @Override
+                public void done(List<AD> list, BmobException e) {
+                    if(e == null){
+                        adList.clear();
+                        adList.addAll(list);
+                        viewAllADsAdapter.notifyDataSetChanged();
+                        adsRefresh.finishRefresh();
+                    }else {
+                        Toast.makeText(AllADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        }else {
+            //查看个人
+            //使用Bmob获取用来标记的信息
+            BmobQuery<AD> adBmobQuery = new BmobQuery<>();
+            adBmobQuery.addWhereEqualTo("editor", name);
+            adBmobQuery.findObjects(new FindListener<AD>() {
+                @Override
+                public void done(List<AD> list, BmobException e) {
+                    if (e == null) {
+                        adList.clear();
+                        adList.addAll(list);
+                        allADsAdapter.notifyDataSetChanged();
+                        adsRefresh.finishRefresh();
+                    } else {
+                        Toast.makeText(AllADsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     private void addADs(){
@@ -144,6 +216,7 @@ public class AllADsActivity extends AppCompatActivity {
         intent.putExtra("all",result);
         setResult(RESULT_OK,intent);
         super.onBackPressed();
+        overridePendingTransition(R.anim.in_1,R.anim.out_1);
     }
 
     public RefreshLayout getAdsRefresh() {
@@ -152,5 +225,15 @@ public class AllADsActivity extends AppCompatActivity {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public boolean isAdapterClickable(){
+        return TextUtils.isEmpty(userName);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userName = null;
     }
 }

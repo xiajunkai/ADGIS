@@ -29,7 +29,7 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
     /**
      * 清除历史按钮
      */
-    public static LinearLayout llSearchEmpty;
+    private LinearLayout llSearchEmpty;
 
     /**
      * 输入框
@@ -44,9 +44,11 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
     /**
      * 隐藏按钮
      */
-    public static  ImageView showOrhide;
+    private ImageView showOrhide;
     public static boolean isShow = true;
+
     /**
+
      * 上下文对象
      */
     private Context mContext;
@@ -290,4 +292,11 @@ public class SearchView extends LinearLayout implements View.OnClickListener {
 
     }
 
+    public LinearLayout getLlSearchEmpty() {
+        return llSearchEmpty;
+    }
+
+    public ImageView getShowOrhide() {
+        return showOrhide;
+    }
 }

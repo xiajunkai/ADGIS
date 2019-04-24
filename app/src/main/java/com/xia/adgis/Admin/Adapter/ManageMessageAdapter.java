@@ -68,7 +68,7 @@ public class ManageMessageAdapter extends RecyclerView.Adapter<ManageMessageAdap
         Messages messages = mMessageList.get(holder.getAdapterPosition());
         holder.mUserTitle.setText("留言者:" + messages.getUserName() + "   留言位置:" + messages.getAdName());
         holder.mContent.setText(messages.getContent());
-        holder.mADImg.setVisibility(View.INVISIBLE);
+        Glide.with(mContext).load(R.drawable.ic_manage_message).into(holder.mADImg);
         if (mEditMode == MODE_CHECK) {
             holder.mCheckBox.setVisibility(View.GONE);
         } else {

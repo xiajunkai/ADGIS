@@ -4,8 +4,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/All_ADs"
-            android:icon="@drawable/ic_all_ads"
+            android:icon="@drawable/manage_ad"
             android:title="管理广告" />
+        <item
+            android:id="@+id/view_All_ADs"
+            android:icon="@drawable/ic_all_ads"
+            android:title="查看广告"/>
         <item
             android:id="@+id/setting"
             android:icon="@drawable/ic_settings"
@@ -14,7 +18,7 @@
         <item
             android:id="@+id/aboutUs_menu"
             android:icon="@drawable/ic_about_us"
-            android:title="关于我们" />
+            android:title="关于开发者" />
 
         <item
             android:id="@+id/exit"

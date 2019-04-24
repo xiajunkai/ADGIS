@@ -1,6 +1,9 @@
 package com.xia.adgis.Admin.Activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +30,7 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
     RelativeLayout manageAD;
     @BindView(R.id.manage_message)
     RelativeLayout manageMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +38,11 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
         ButterKnife.bind(this);
         toolbar.setTitle("管理端");
         setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_manage);
+        }
         manageUser.setOnClickListener(this);
         manageAD.setOnClickListener(this);
         manageMessage.setOnClickListener(this);
@@ -49,11 +58,18 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.admin_logout:
-                BmobUser.logOut();
-                startActivity(new Intent(AdminActivity.this, LoginActivity.class));
-                overridePendingTransition(R.anim.in, R.anim.out);
-                finish();
-                //Toast.makeText(this, "登出成功", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("确认登出管理端？");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BmobUser.logOut();
+                        startActivity(new Intent(AdminActivity.this, LoginActivity.class));
+                        onBackPressed();
+                    }
+                });
+                builder.setNegativeButton("取消", null);
+                builder.show();
                 break;
         }
         return true;
@@ -75,5 +91,11 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
                 overridePendingTransition(R.anim.in, R.anim.out);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.in, R.anim.out);
     }
 }

@@ -28,6 +28,7 @@ public class SearchAdapter extends BaseAdapter{
     private AppCompatActivity mContext;
     private List<SearchItem> mData;
     private int mLayoutId;
+    private SearchActivity activity;
 
     private RolloutBDInfo bdInfo;
 
@@ -36,6 +37,7 @@ public class SearchAdapter extends BaseAdapter{
         mData = data;
         mLayoutId = layoutId;
         bdInfo = new RolloutBDInfo();
+        activity = (SearchActivity) mContext;
     }
 
     @Override
@@ -71,13 +73,14 @@ public class SearchAdapter extends BaseAdapter{
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View v = SearchActivity.lvResults.getChildAt(0);
+                View v = activity.getLvResults().getChildAt(0);
                 //相对于其父视图的顶部位置
                 int top = v.getTop();
                 //返回适配器的数据集中显示在屏幕上的第一个项目的位置。
-                int firstVisiblePosition = SearchActivity.lvResults.getFirstVisiblePosition();
+                int firstVisiblePosition = activity.getLvResults().getFirstVisiblePosition();
                 bdInfo.x = image.getLeft();
-                bdInfo.y = SearchActivity.searchView.getHeight() + RCommonUtil.dip2px(mContext, 8) + (position - firstVisiblePosition) * RCommonUtil.dip2px(mContext, 82f) + top + SearchActivity.lvResults.getTop();
+                bdInfo.y = activity.getSearchView().getHeight() + RCommonUtil.dip2px(mContext, 8) + (position - firstVisiblePosition) * RCommonUtil.dip2px(mContext, 82f) + top
+                        + activity.getLvResults().getTop();
 
                 //关于imageView想要有多宽
                 bdInfo.width = image.getWidth();

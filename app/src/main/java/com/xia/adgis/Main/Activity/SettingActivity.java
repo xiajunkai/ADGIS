@@ -43,8 +43,12 @@ public class SettingActivity extends AppCompatActivity {
     TextView showCaChe;
     @BindView(R.id.preferences)
     RelativeLayout preferences;
+    @BindView(R.id.feedback)
+    RelativeLayout feedback;
     @BindView(R.id.appMessage)
     RelativeLayout appMessage;
+    @BindView(R.id.aboutUs)
+    RelativeLayout aboutUs;
     @BindView(R.id.log_out)
     Button logOut;
     //本地用户
@@ -67,8 +71,12 @@ public class SettingActivity extends AppCompatActivity {
         initCaCheSize();
         //偏好设置
         preference();
+        //反馈
+        feedback();
         //应用信息
         showAppMessage();
+        //关于开发者
+        aboutMe();
         //登出
         logOut();
     }
@@ -180,6 +188,15 @@ public class SettingActivity extends AppCompatActivity {
         });
     }
 
+    private void feedback(){
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingActivity.this, FeedBackActivity.class));
+                overridePendingTransition(R.anim.in,R.anim.out);
+            }
+        });
+    }
     private void showAppMessage(){
         appMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +207,15 @@ public class SettingActivity extends AppCompatActivity {
         });
     }
 
+    private void aboutMe(){
+        aboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingActivity.this, AboutMeActivity.class));
+                overridePendingTransition(R.anim.in,R.anim.out);
+            }
+        });
+    }
     private void logOut(){
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -21,6 +21,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.Gravity;
@@ -60,6 +61,9 @@ import com.example.swipeback.SwipeBackActivityImpl;
 import com.xia.adgis.Admin.Activity.AdminActivity;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.Main.Bean.AD;
+import com.xia.adgis.Main.Bean.ADCompany;
+import com.xia.adgis.Main.Bean.ADmaintain;
+import com.xia.adgis.Main.Bean.ADphysical;
 import com.xia.adgis.Main.Tool.StatusBarUtil;
 import com.xia.adgis.R;
 import com.amap.api.maps.AMap;
@@ -91,6 +95,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     private static final int USER_CENTRE = 3;
     private static final int ALL_ADS = 4;
     private static final int ADS_DETAIL = 20;
+    private static final int VIEW_ALL_ADS = 30;
     //需点击隐藏的UI控件
     @BindView(R.id.fullscreen_content_controls)
     View mControlsView;
@@ -174,7 +179,7 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     private ArrayList<RolloutInfo> data = new ArrayList<>();
     protected RolloutBDInfo bdInfo;
     protected RolloutInfo imageInfo;
-    private String tempImage;
+    String tempImage;
     //云端登陆
     User user;
     //从云端获取的AD数组
@@ -186,6 +191,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     //设置首选项
     SharedPreferences settingPreferences;
     private long mExitTime;
+    //主界面查看广告牌的dialog
+    AlertDialog dialog = null;
     /**
      * 以下全部都是隐藏界面的逻辑
      */
@@ -483,11 +490,14 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
 
     //Marker点击回调
     @Override
-    public boolean onMarkerClick(final Marker marker) {
-        jumpPoint(marker);
+    public boolean onMarkerClick(Marker marker) {
+        //jumpPoint(marker);
         if(!marker.equals(locationMarker)){
             tempMarkerId = SearchTempMarkerIdFromLatLng(marker.getPosition());
+            //jumpPoint(marker);
             loadingCorrespondingMessage(marker);
+        }else {
+            jumpPoint(marker);
         }
         return false;
     }
@@ -610,7 +620,6 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
             public void onClick(View view) {
                 popMenu = new TopRightMenu(MainActivity.this);
                 List<MenuItem> menuItemList = new ArrayList<>();
-                menuItemList.add(new MenuItem(R.drawable.ads_message,"文字内容"));
                 menuItemList.add(new MenuItem(R.drawable.ads_physical,"物理信息"));
                 menuItemList.add(new MenuItem(R.drawable.ads_company,"公司信息"));
                 menuItemList.add(new MenuItem(R.drawable.ads_maintain,"维护信息"));
@@ -618,19 +627,81 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                         .setOnMenuItemClickListener(new TopRightMenu.OnMenuItemClickListener() {
                             @Override
                             public void onMenuItemClick(int position) {
-                                Toast.makeText(MainActivity.this, "待完善", Toast.LENGTH_SHORT).show();
                                 switch (position){
                                     case 0:
-
+                                        progressDialog.setCancelable(true);
+                                        progressDialog.show();
+                                        BmobQuery<ADphysical> physicalBmobQuery = new BmobQuery<>();
+                                        physicalBmobQuery.addWhereEqualTo("name", title);
+                                        physicalBmobQuery.findObjects(new FindListener<ADphysical>() {
+                                            @Override
+                                            public void done(List<ADphysical> list, BmobException e) {
+                                                progressDialog.dismiss();
+                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
+                                                dialog.show();
+                                                if (dialog.getWindow() != null) {
+                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_physical);
+                                                }
+                                                TextView length = (TextView) dialog.findViewById(R.id.ads_length);
+                                                TextView width = (TextView) dialog.findViewById(R.id.ads_width);
+                                                TextView height = (TextView) dialog.findViewById(R.id.ads_height);
+                                                TextView material = (TextView) dialog.findViewById(R.id.ads_material);
+                                                if(length != null && width != null && height != null && material != null) {
+                                                    length.setText(list.get(list.size() - 1).getLength() + " cm");
+                                                    width.setText(list.get(list.size() - 1).getWidth() + " cm");
+                                                    height.setText(list.get(list.size() - 1).getHeight() + " cm");
+                                                    material.setText(list.get(list.size() - 1).getMaterial());
+                                                }
+                                            }
+                                        });
                                         break;
                                     case 1:
-
+                                        progressDialog.setCancelable(true);
+                                        progressDialog.show();
+                                        BmobQuery<ADCompany> companyBmobQuery = new BmobQuery<>();
+                                        companyBmobQuery.addWhereEqualTo("name", title);
+                                        companyBmobQuery.findObjects(new FindListener<ADCompany>() {
+                                            @Override
+                                            public void done(List<ADCompany> list, BmobException e) {
+                                                progressDialog.dismiss();
+                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
+                                                dialog.show();
+                                                if (dialog.getWindow() != null) {
+                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_company);
+                                                }
+                                                TextView designer = (TextView) dialog.findViewById(R.id.ads_designer);
+                                                TextView holder = (TextView) dialog.findViewById(R.id.ads_holder);
+                                                if (designer != null && holder != null){
+                                                    designer.setText(list.get(list.size() - 1).getDesigner());
+                                                    holder.setText(list.get(list.size() - 1).getHoder());
+                                                }
+                                            }
+                                        });
                                         break;
                                     case 2:
-
-                                        break;
-                                    case 3:
-
+                                        progressDialog.setCancelable(true);
+                                        progressDialog.show();
+                                        BmobQuery<ADmaintain> maintainBmobQuery = new BmobQuery<>();
+                                        maintainBmobQuery.addWhereEqualTo("name", title);
+                                        maintainBmobQuery.findObjects(new FindListener<ADmaintain>() {
+                                            @Override
+                                            public void done(List<ADmaintain> list, BmobException e) {
+                                                progressDialog.dismiss();
+                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
+                                                dialog.show();
+                                                if (dialog.getWindow() != null) {
+                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_maintain);
+                                                }
+                                                TextView company = (TextView) dialog.findViewById(R.id.ads_maintain_company);
+                                                TextView content = (TextView) dialog.findViewById(R.id.ads_maintain_context);
+                                                TextView time = (TextView) dialog.findViewById(R.id.ads_maintain_time);
+                                                if (company != null && content != null && time != null){
+                                                    company.setText(list.get(list.size() - 1).getCompany());
+                                                    content.setText(list.get(list.size() - 1).getContext());
+                                                    time.setText(list.get(list.size() - 1).getTime());
+                                                }
+                                            }
+                                        });
                                         break;
                                     default:
                                 }
@@ -865,6 +936,12 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                             drawer.closeDrawer(Gravity.START);
                         }
                         break;
+                    case R.id.view_All_ADs:
+                        Intent in = new Intent(MainActivity.this, AllADsActivity.class);
+                        in.putExtra("user_name", "all");
+                        startActivityForResult(in,VIEW_ALL_ADS);
+                        overridePendingTransition(R.anim.in,R.anim.out);
+                        break;
                     case R.id.setting:
                         Intent intent = new Intent(MainActivity.this,SettingActivity.class);
                         startActivityForResult(intent,SETTING);
@@ -1063,39 +1140,50 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                 }
                 break;
             case USER_CENTRE :
-                if(resultCode == RESULT_OK){
-                    user = BmobUser.getCurrentUser(User.class);
-                    Glide.with(MainActivity.this)
-                            .load(user.getUserIcon())
-                            .into(new GlideDrawableImageViewTarget(mCircleImageView) {
-                                @Override
-                                public void onLoadStarted(Drawable placeholder) {
-                                    super.onLoadStarted(placeholder);
-                                    progressDialog.show();
-                                }
-                                @Override
-                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                    super.onResourceReady(resource, animation);
-                                    Glide.with(MainActivity.this)
-                                            .load(user.getUserIcon())
-                                            .into(new GlideDrawableImageViewTarget(icon){
-                                                @Override
-                                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                                    super.onResourceReady(resource, animation);
-                                                    progressDialog.dismiss();
-                                                }
-                                            });
-                                }
-                            });
-                    //是否是管理员
-                    if(user.isAdmin()){
-                        userAdmin.setText("商家账户");
-                    }else {
-                        userAdmin.setText("普通账户");
+                if(resultCode == RESULT_OK) {
+                    if (data.getStringExtra("centre").equals("success")) {
+                        user = BmobUser.getCurrentUser(User.class);
+                        Glide.with(MainActivity.this)
+                                .load(user.getUserIcon())
+                                .into(new GlideDrawableImageViewTarget(mCircleImageView) {
+                                    @Override
+                                    public void onLoadStarted(Drawable placeholder) {
+                                        super.onLoadStarted(placeholder);
+                                        progressDialog.show();
+                                    }
+
+                                    @Override
+                                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                        super.onResourceReady(resource, animation);
+                                        Glide.with(MainActivity.this)
+                                                .load(user.getUserIcon())
+                                                .into(new GlideDrawableImageViewTarget(icon) {
+                                                    @Override
+                                                    public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                                        super.onResourceReady(resource, animation);
+                                                        progressDialog.dismiss();
+                                                    }
+                                                });
+                                    }
+                                });
+                        //是否是管理员
+                        if (user.isAdmin()) {
+                            userAdmin.setText("商家账户");
+                        } else {
+                            userAdmin.setText("普通账户");
+                        }
                     }
                 }
                 break;
             case ALL_ADS:
+                if (resultCode == RESULT_OK){
+                    String all = data.getStringExtra("all");
+                    if(all.equals("success")){
+                        RefreshMapData();
+                    }
+                }
+                break;
+            case VIEW_ALL_ADS:
                 if (resultCode == RESULT_OK){
                     String all = data.getStringExtra("all");
                     if(all.equals("success")){

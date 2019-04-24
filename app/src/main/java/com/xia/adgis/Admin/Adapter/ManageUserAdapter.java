@@ -1,6 +1,11 @@
 package com.xia.adgis.Admin.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.xia.adgis.Main.Activity.UserCentreActivity;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
 
@@ -62,7 +67,7 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        User user = mUserList.get(holder.getAdapterPosition());
+        final User user = mUserList.get(holder.getAdapterPosition());
         holder.mUserTitle.setText(user.getUsername());
         holder.mUserMotto.setText(user.getMotto());
         Glide.with(mContext).load(user.getUserIcon()).thumbnail(0.5f)
@@ -87,8 +92,14 @@ public class ManageUserAdapter extends RecyclerView.Adapter<ManageUserAdapter.Vi
 
         holder.mUserImg.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext, "点击了", Toast.LENGTH_SHORT).show();
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, UserCentreActivity.class);
+                intent.putExtra("user_name", user.getUsername());
+                ActivityCompat.startActivity(mContext, intent,
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                (AppCompatActivity)mContext,
+                                new Pair<>(view, "icon"))
+                                .toBundle());
             }
         });
     }

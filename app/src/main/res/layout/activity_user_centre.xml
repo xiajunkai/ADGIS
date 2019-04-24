@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context="com.xia.adgis.Main.Activity.UserCentreActivity">
+    tools:context="com.xia.adgis.Main.Activity.UserCentreActivity"
+    tools:ignore="HardcodedText">
 
     <ImageView
     android:id="@+id/parallax"
@@ -115,12 +116,11 @@
                         android:paddingTop="@dimen/division_line"
                         android:paddingBottom="@dimen/division_line">
                         <LinearLayout style="@style/AppTheme.CommonBar.Bar"
-                            android:background="@android:color/white"
-                            android:id="@+id/fmc_center_dynamic">
+                            android:orientation="horizontal"
+                            android:background="@android:color/white">
                             <TextView style="@style/AppTheme.CommonBar.Content.Value"
                                 android:gravity="center"
-                                android:text="个人信息"
-                                tools:ignore="HardcodedText"/>
+                                android:text="个人信息"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -512,8 +512,20 @@
                 <View
                     android:layout_height="@dimen/division_line"
                     android:layout_width="match_parent"
-                    android:background="#cccccc"
-                    android:layout_marginBottom="5dp"/>
+                    android:background="#cccccc" />
+                <LinearLayout style="@style/AppTheme.CommonBar.Bar"
+                    android:id="@+id/more_info"
+                    android:orientation="horizontal"
+                    android:background="@drawable/more_info"
+                    android:clickable="true">
+                    <TextView style="@style/AppTheme.CommonBar.Content.Value"
+                        android:gravity="center"
+                        android:text="更多消息"/>
+                </LinearLayout>
+                <View
+                    android:layout_height="@dimen/division_line"
+                    android:layout_width="match_parent"
+                    android:background="#cccccc" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>

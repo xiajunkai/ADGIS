@@ -120,6 +120,7 @@ public class ADsDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ads_detail);
         ButterKnife.bind(this);
+        user = BmobUser.getCurrentUser(User.class);
         isEdit = "fail";
         //获取当前广告牌名称
         adsName = getIntent().getStringExtra("data");
@@ -127,6 +128,12 @@ public class ADsDetailActivity extends AppCompatActivity {
         //toolbar
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         //沉浸模式
         StatusBarUtil.immersive(this, true);
         StatusBarUtil.setPaddingSmart(this,toolbar);
@@ -304,17 +311,13 @@ public class ADsDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_message,menu);
-        return true;
+        return !user.isSuperAdmin();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case android.R.id.home:
-                onBackPressed();
-                break;
             case R.id.ads_detail_edit:
-                user = BmobUser.getCurrentUser(User.class);
                 if(user.isAdmin()){
                     if(user.getUsername().equals(adsEditor)){
                         Intent intent = new Intent(new Intent(ADsDetailActivity.this, EditADsActivity.class));
@@ -374,12 +377,7 @@ public class ADsDetailActivity extends AppCompatActivity {
                 });
             }
         });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        builder.setNegativeButton("取消",null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

@@ -118,7 +118,8 @@
         <activity android:name=".Admin.Activity.ManageUserActivity" />
         <activity android:name=".Admin.Activity.ManageADsActivity" />
         <activity android:name=".Admin.Activity.ManageMessagesActivity" />
-        <activity android:name=".Admin.Activity.AdminActivity"></activity>
+        <activity android:name=".Admin.Activity.AdminActivity" />
+        <activity android:name=".Main.Activity.MessageActivity"></activity>
     </application>
 
 </manifest>

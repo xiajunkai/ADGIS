@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xia.adgis.Main.Activity.SearchActivity;
 import com.xia.adgis.R;
 import com.xia.adgis.Utils.MySearchView.SearchView;
 
@@ -23,11 +24,13 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> {
 
     private int resourceId;
     private List<String> list;
+    private SearchActivity activity;
 
     public AutoCompleteAdapter(Context context,int textViewResourdeId,List<String> objects){
         super(context,textViewResourdeId,objects);
         resourceId = textViewResourdeId;
         list = objects;
+        activity = (SearchActivity) context;
     }
 
     @Override
@@ -54,8 +57,8 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> {
                 list.remove(temp);
                 notifyDataSetChanged();
                 if(list.isEmpty()){
-                    SearchView.llSearchEmpty.setVisibility(View.GONE);
-                    SearchView.showOrhide.setImageResource(R.drawable.ic_expand_more);
+                    activity.getSearchView().getLlSearchEmpty().setVisibility(View.GONE);
+                    activity.getSearchView().getShowOrhide().setImageResource(R.drawable.ic_expand_more);
                 }
             }
         });

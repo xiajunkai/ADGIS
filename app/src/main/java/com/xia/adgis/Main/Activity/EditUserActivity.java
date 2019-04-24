@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -53,6 +54,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.xia.adgis.App;
 import com.xia.adgis.CropCircleActivity;
 import com.xia.adgis.Main.Tool.BindPhoneDialog;
+import com.xia.adgis.Main.Tool.StatusBarUtil;
 import com.xia.adgis.Main.Tool.UpgradeAdminDialog;
 import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
@@ -137,6 +139,8 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
     //选择生日
     TimePickerView mTimePickerView;
 
+    //传给个人中心结果
+    private String result = "fail";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,6 +207,9 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
     //初始化toolBar
     private void initToolBar(){
         toolbar.setTitle("编辑个人资料");
+        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+        StatusBarUtil.immersive(this, true);
+        StatusBarUtil.setPaddingSmart(this, toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
@@ -723,9 +730,9 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
                                     if(e == null){
                                         Toast.makeText(EditUserActivity.this, "信息修改成功", Toast.LENGTH_SHORT).show();
                                         loading.dismiss();
-                                        finish();
+                                        result = "success";
                                         //继续刷新
-                                        UserCentreActivity.refreshLayout.autoRefresh();
+                                        onBackPressed();
                                     }else{
                                         Toast.makeText(EditUserActivity.this, "更新失败"+e.getMessage(), Toast.LENGTH_SHORT).show();
                                         loading.dismiss();
@@ -758,9 +765,9 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
                 if (e == null) {
                     Toast.makeText(EditUserActivity.this, "信息修改成功", Toast.LENGTH_SHORT).show();
                     loading.dismiss();
-                    finish();
+                    result = "success";
                     //继续刷新
-                    UserCentreActivity.refreshLayout.autoRefresh();
+                    onBackPressed();
                 }else {
                     Toast.makeText(EditUserActivity.this, "更新失败"+e.getMessage(), Toast.LENGTH_SHORT).show();
                     loading.dismiss();
@@ -786,6 +793,14 @@ public class EditUserActivity extends SwipeBackActivityImpl implements View.OnCl
         if (mAMapLocationClient != null) {
             mAMapLocationClient.stopLocation();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent in = new Intent();
+        in.putExtra("edit_user",result);
+        setResult(RESULT_OK,in);
+        super.onBackPressed();
     }
 
     public TextView getEditPhone() {

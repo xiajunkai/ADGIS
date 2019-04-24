@@ -41,12 +41,12 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
     /**
      * 搜索结果列表view
      */
-    public static ListView lvResults;
+    private ListView lvResults;
 
     /**
      * 搜索view
      */
-    public static SearchView searchView;
+    private SearchView searchView;
 
     /**
      * 热搜框列表adapter
@@ -64,11 +64,6 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
     private SearchAdapter resultAdapter;
 
     private List<SearchItem> dbData;
-
-    /**
-     * 热搜版数据
-     */
-    private List<String> hintData;
 
     /**
      * 搜索过程中自动补全数据
@@ -184,7 +179,10 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
      * 获取热搜版data 和adapter
      */
     private void getSearchHistoryData() {
-        hintData = new ArrayList<>(hintSize);
+        /*
+      热搜版数据
+     */
+        List<String> hintData = new ArrayList<>(hintSize);
         HistorySqliteHelpter helpter = new HistorySqliteHelpter(SearchActivity.this);
         SQLiteDatabase database = helpter.getWritableDatabase();
         try {
@@ -289,5 +287,13 @@ public class SearchActivity extends SwipeBackActivityImpl implements SearchView.
     @Override
     public ISwipeBackActivity getPreActivity() {
         return (ISwipeBackActivity) App.getInstance().getStack().getBackActivity();
+    }
+
+    public ListView getLvResults() {
+        return lvResults;
+    }
+
+    public SearchView getSearchView() {
+        return searchView;
     }
 }

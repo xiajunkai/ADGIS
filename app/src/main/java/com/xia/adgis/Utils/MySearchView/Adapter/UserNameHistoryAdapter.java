@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xia.adgis.Main.Activity.SearchActivity;
 import com.xia.adgis.R;
 import com.xia.adgis.Main.DataBase.HistorySqliteHelpter;
 import com.xia.adgis.Utils.MySearchView.SearchView;
@@ -27,11 +28,13 @@ public class UserNameHistoryAdapter extends ArrayAdapter<String> {
     private int resourceId;
     private Context mContext;
     private List<String> list;
+    private SearchActivity activity;
     public UserNameHistoryAdapter(Context context, int textViewResourdeId, List<String> objects) {
         super(context,textViewResourdeId,objects);
         resourceId = textViewResourdeId;
         mContext = context;
         list = objects;
+        activity = (SearchActivity) context;
     }
 
     @Override
@@ -67,8 +70,8 @@ public class UserNameHistoryAdapter extends ArrayAdapter<String> {
                     Toast.makeText(mContext,"删除失败",Toast.LENGTH_SHORT).show();
                 }
                 if(list.isEmpty()){
-                    SearchView.llSearchEmpty.setVisibility(View.GONE);
-                    SearchView.showOrhide.setImageResource(R.drawable.ic_expand_more);
+                    activity.getSearchView().getLlSearchEmpty().setVisibility(View.GONE);
+                    activity.getSearchView().getShowOrhide().setImageResource(R.drawable.ic_expand_more);
                     SearchView.isShow = false;
                 }
             }
