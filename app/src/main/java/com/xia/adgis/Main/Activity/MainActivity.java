@@ -192,7 +192,8 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
     SharedPreferences settingPreferences;
     private long mExitTime;
     //主界面查看广告牌的dialog
-    AlertDialog dialog = null;
+    AlertDialog.Builder dialog = null;
+    View dialogView;
     /**
      * 以下全部都是隐藏界面的逻辑
      */
@@ -637,21 +638,22 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                             @Override
                                             public void done(List<ADphysical> list, BmobException e) {
                                                 progressDialog.dismiss();
-                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
-                                                dialog.show();
-                                                if (dialog.getWindow() != null) {
-                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_physical);
-                                                }
-                                                TextView length = (TextView) dialog.findViewById(R.id.ads_length);
-                                                TextView width = (TextView) dialog.findViewById(R.id.ads_width);
-                                                TextView height = (TextView) dialog.findViewById(R.id.ads_height);
-                                                TextView material = (TextView) dialog.findViewById(R.id.ads_material);
+                                                dialog = new AlertDialog.Builder(MainActivity.this);
+                                                dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.fragment_ads_physical, null);
+                                                dialog.setView(dialogView);
+                                                dialog.setTitle(title + "的物理信息");
+                                                TextView length = (TextView) dialogView.findViewById(R.id.ads_length);
+                                                TextView width = (TextView) dialogView.findViewById(R.id.ads_width);
+                                                TextView height = (TextView) dialogView.findViewById(R.id.ads_height);
+                                                TextView material = (TextView) dialogView.findViewById(R.id.ads_material);
                                                 if(length != null && width != null && height != null && material != null) {
                                                     length.setText(list.get(list.size() - 1).getLength() + " cm");
                                                     width.setText(list.get(list.size() - 1).getWidth() + " cm");
                                                     height.setText(list.get(list.size() - 1).getHeight() + " cm");
                                                     material.setText(list.get(list.size() - 1).getMaterial());
                                                 }
+                                                dialog.setPositiveButton("取消", null);
+                                                dialog.show();
                                             }
                                         });
                                         break;
@@ -664,17 +666,18 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                             @Override
                                             public void done(List<ADCompany> list, BmobException e) {
                                                 progressDialog.dismiss();
-                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
-                                                dialog.show();
-                                                if (dialog.getWindow() != null) {
-                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_company);
-                                                }
-                                                TextView designer = (TextView) dialog.findViewById(R.id.ads_designer);
-                                                TextView holder = (TextView) dialog.findViewById(R.id.ads_holder);
+                                                dialog = new AlertDialog.Builder(MainActivity.this);
+                                                dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.fragment_ads_company, null);
+                                                dialog.setView(dialogView);
+                                                dialog.setTitle(title + "的公司信息");
+                                                TextView designer = (TextView) dialogView.findViewById(R.id.ads_designer);
+                                                TextView holder = (TextView) dialogView.findViewById(R.id.ads_holder);
                                                 if (designer != null && holder != null){
                                                     designer.setText(list.get(list.size() - 1).getDesigner());
                                                     holder.setText(list.get(list.size() - 1).getHoder());
                                                 }
+                                                dialog.setPositiveButton("取消", null);
+                                                dialog.show();
                                             }
                                         });
                                         break;
@@ -687,19 +690,20 @@ public class MainActivity extends SwipeBackActivityImpl implements AMap.OnMarker
                                             @Override
                                             public void done(List<ADmaintain> list, BmobException e) {
                                                 progressDialog.dismiss();
-                                                dialog = new AlertDialog.Builder(MainActivity.this).create();
-                                                dialog.show();
-                                                if (dialog.getWindow() != null) {
-                                                    dialog.getWindow().setContentView(R.layout.fragment_ads_maintain);
-                                                }
-                                                TextView company = (TextView) dialog.findViewById(R.id.ads_maintain_company);
-                                                TextView content = (TextView) dialog.findViewById(R.id.ads_maintain_context);
-                                                TextView time = (TextView) dialog.findViewById(R.id.ads_maintain_time);
+                                                dialog = new AlertDialog.Builder(MainActivity.this);
+                                                dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.fragment_ads_maintain, null);
+                                                dialog.setView(dialogView);
+                                                dialog.setTitle(title + "的维护信息");
+                                                TextView company = (TextView) dialogView.findViewById(R.id.ads_maintain_company);
+                                                TextView content = (TextView) dialogView.findViewById(R.id.ads_maintain_context);
+                                                TextView time = (TextView) dialogView.findViewById(R.id.ads_maintain_time);
                                                 if (company != null && content != null && time != null){
                                                     company.setText(list.get(list.size() - 1).getCompany());
                                                     content.setText(list.get(list.size() - 1).getContext());
                                                     time.setText(list.get(list.size() - 1).getTime());
                                                 }
+                                                dialog.setPositiveButton("取消", null);
+                                                dialog.show();
                                             }
                                         });
                                         break;

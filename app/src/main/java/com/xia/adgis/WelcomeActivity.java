@@ -2,6 +2,7 @@ package com.xia.adgis;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.os.Handler;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.lljjcoder.style.citylist.Toast.ToastUtils;
 import com.xia.adgis.Admin.Activity.AdminActivity;
 import com.xia.adgis.Login.LoginActivity;
 import com.xia.adgis.Main.Activity.MainActivity;
@@ -22,7 +22,6 @@ import com.xia.adgis.Register.Bean.User;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -64,7 +63,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
     //权限被拒绝的提醒
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case 1:
                 if (grantResults.length > 0) {

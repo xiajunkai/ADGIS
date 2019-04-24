@@ -1,5 +1,6 @@
 package com.xia.adgis.Admin.Activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class ManageMessagesActivity extends AppCompatActivity implements View.OnClickListener, ManageMessageAdapter.OnItemClickListener {
 
@@ -181,12 +183,12 @@ public class ManageMessagesActivity extends AppCompatActivity implements View.On
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for (int i = adapter.getList().size(), j = 0 ; i > j; i--) {
+                for (int i = adapter.getList().size(); i > 0; i --) {
                     Messages messages = adapter.getList().get(i - 1);
                     if (messages.isSelect()) {
                         adapter.getList().remove(messages);
                         //删除逻辑
-                        index--;
+                        index --;
                     }
                 }
                 index = 0;

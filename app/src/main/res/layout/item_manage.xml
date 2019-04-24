@@ -28,7 +28,6 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/tubiao"
             android:contentDescription="@string/app_name"/>
 
         <TextView

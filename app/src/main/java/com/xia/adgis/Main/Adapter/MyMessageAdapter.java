@@ -1,6 +1,7 @@
 package com.xia.adgis.Main.Adapter;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class MyMessageAdapter extends RecyclerView.Adapter<MyMessageAdapter.View
     private List<Messages> mMessagesList;
     private Context mContext;
     private User user;
+    private AlertDialog.Builder dialog;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.message_user_icon)
@@ -62,7 +64,7 @@ public class MyMessageAdapter extends RecyclerView.Adapter<MyMessageAdapter.View
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Messages messages = mMessagesList.get(position);
+        final Messages messages = mMessagesList.get(position);
         holder.userName.setText(messages.getUserName());
         holder.userName.setText(messages.getUserName());
         //若是当前用户，直接加载，不是再去服务器查询
@@ -87,7 +89,18 @@ public class MyMessageAdapter extends RecyclerView.Adapter<MyMessageAdapter.View
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                dialog = new AlertDialog.Builder(mContext);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.message_detail, null);
+                dialog.setTitle("留言详情");
+                dialog.setView(view);
+                TextView user = (TextView) view.findViewById(R.id.message_detail_user_name);
+                TextView ad = (TextView) view.findViewById(R.id.message_detail_ads_name);
+                TextView content = (TextView) view.findViewById(R.id.message_detail_content);
+                user.setText(messages.getUserName());
+                ad.setText(messages.getAdName());
+                content.setText(messages.getContent());
+                dialog.setPositiveButton("取消",null);
+                dialog.show();
             }
         });
     }

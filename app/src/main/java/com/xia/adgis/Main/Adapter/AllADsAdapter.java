@@ -286,6 +286,7 @@ public class AllADsAdapter extends RecyclerView.Adapter<AllADsAdapter.ViewHolder
                     }
                 }else {
                     Toast.makeText(mContext, "查找留言信息失败！", Toast.LENGTH_SHORT).show();
+                    loading.dismiss();
                 }
             }
         });
@@ -316,5 +317,4 @@ public class AllADsAdapter extends RecyclerView.Adapter<AllADsAdapter.ViewHolder
             }
         }
     }
-
 }
