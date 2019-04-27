@@ -5,7 +5,7 @@ ADGIS是一个能够简易查看当前广告牌信息的应用。使用了Bmob�
 
 |界面描述|运行截图|
 |----|-----|
-|**主界面**|![](https://github.com/xiajunkai/ADGIS/blob/master/art/man_1.jpg)|
+|**主界面**|![](https://github.com/xiajunkai/ADGIS/blob/master/art/main_1.jpg)|
 |**搜索界面**|![](https://github.com/xiajunkai/ADGIS/blob/master/art/search_1.jpg)|
 |**个人中心**|![](https://github.com/xiajunkai/ADGIS/blob/master/art/edituser.jpg)|
 |**用户信息修改**|![](https://github.com/xiajunkai/ADGIS/blob/master/art/edituser.jpg)|
