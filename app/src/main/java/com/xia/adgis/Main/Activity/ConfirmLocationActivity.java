@@ -52,6 +52,7 @@ public class ConfirmLocationActivity extends AppCompatActivity {
     private TopRightMenu popMenu;
     double longitude;
     double latitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +63,8 @@ public class ConfirmLocationActivity extends AppCompatActivity {
         //地图设置
         initMapSetting();
         mMapView.onCreate(savedInstanceState);
-        //进去即定位
-        if (mAMapLocationClient != null) {
-            mAMapLocationClient.startLocation();
-        }
+        //查看打开模式
+        initMode();
         help.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +116,34 @@ public class ConfirmLocationActivity extends AppCompatActivity {
         mUiSettings.setZoomControlsEnabled(false);
     }
 
+    private void initMode(){
+        Intent intent = getIntent();
+        boolean isShowLocation = intent.getBooleanExtra("mode", false);
+        if (isShowLocation){
+            //编辑模式
+            LatLng latLng = intent.getParcelableExtra("location");
+            if (locationMarker == null) {
+                //如果是空的添加一个新的,icon方法就是设置定位图标，可以自定义
+                locationMarker = mAMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ad_location))));
+            } else {
+                //已经添加过了，修改位置即可
+                locationMarker.remove();
+                locationMarker = mAMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ad_location))));
+            }
+            mAMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    latLng, 15, 0, 0)), 500, null);
+        }else {
+            //添加模式
+            //进去就定位
+            if (mAMapLocationClient != null) {
+                mAMapLocationClient.startLocation();
+            }
+        }
+    }
     private void Confirm(LatLng lng){
         Intent intent = new Intent();
         intent.putExtra("location_info", lng);

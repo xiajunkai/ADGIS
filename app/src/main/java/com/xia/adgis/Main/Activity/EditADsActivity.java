@@ -119,6 +119,8 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
     private String objectID_PHY;
     private String objectID_COM;
     private String objectID_MAIN;
+    //传递的经纬度
+    private LatLng latLng;
     /**
      *图像相关
      */
@@ -206,6 +208,7 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
                     editBrief.setText(ad.getBrief());
                     editLongitude.setText(String.valueOf(ad.getLongitude()));
                     editLatitude.setText(String.valueOf(ad.getLatitude()));
+                    latLng = new LatLng(ad.getLatitude(),ad.getLongitude());
                     //作用于更换图像，储存原来图像路径，方便删除
                     lastImage = ad.getImageID();
                     //
@@ -567,7 +570,10 @@ public class EditADsActivity extends AppCompatActivity implements View.OnClickLi
      * 选择经纬度
      */
     private void confirmLocation(){
-        startActivityForResult(new Intent(EditADsActivity.this, ConfirmLocationActivity.class),LOCATION_REQUEST);
+        Intent intent = new Intent(EditADsActivity.this, ConfirmLocationActivity.class);
+        intent.putExtra("mode", true);
+        intent.putExtra("location", latLng);
+        startActivityForResult(intent ,LOCATION_REQUEST);
         overridePendingTransition(R.anim.in,R.anim.out);
     }
 

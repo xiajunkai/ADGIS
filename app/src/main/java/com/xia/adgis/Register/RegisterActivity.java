@@ -119,6 +119,7 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
     View view;
     //加载对话框
     ProgressDialog loading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

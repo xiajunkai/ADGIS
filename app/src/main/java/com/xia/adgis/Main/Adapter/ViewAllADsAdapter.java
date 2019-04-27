@@ -1,6 +1,5 @@
 package com.xia.adgis.Main.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.ActivityCompat;
@@ -28,6 +27,7 @@ public class ViewAllADsAdapter extends RecyclerView.Adapter<ViewAllADsAdapter.Vi
     private Context mContext;
 
     private List<AD> mADList;
+
 
     public ViewAllADsAdapter(List<AD> adList) {
         mADList = adList;
@@ -67,6 +67,16 @@ public class ViewAllADsAdapter extends RecyclerView.Adapter<ViewAllADsAdapter.Vi
                                 (AppCompatActivity) mContext,
                                 new Pair<>(v, "detail_image"))
                                 .toBundle());
+            }
+        });
+        holder.adImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int position = holder.getAdapterPosition();
+                mADList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(0,mADList.size());
+                return false;
             }
         });
         return holder;

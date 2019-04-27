@@ -20,6 +20,7 @@ import com.xia.adgis.R;
 import com.xia.adgis.Register.Bean.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,14 +59,14 @@ public class AllADsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //选择账户
         initUser();
+        //添加节点
+        addADs();
         adsRefresh.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshLayout) {
                 refreshADs(passUserName);
             }
         });
-        //添加节点
-        addADs();
     }
 
     private void initUser(){
@@ -79,6 +80,7 @@ public class AllADsActivity extends AppCompatActivity {
             //初始化数据
             initADs(user.getUsername());
         } else if(userName.equals("all")){
+            passUserName = userName;
             initToolbar(userName);
             initAllADs();
             addADs.setVisibility(View.GONE);
@@ -155,6 +157,7 @@ public class AllADsActivity extends AppCompatActivity {
                     if(e == null){
                         adList.clear();
                         adList.addAll(list);
+                        Collections.reverse(adList);
                         viewAllADsAdapter.notifyDataSetChanged();
                         adsRefresh.finishRefresh();
                     }else {
@@ -235,5 +238,9 @@ public class AllADsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         userName = null;
+    }
+
+    public RecyclerView getAdsDetail() {
+        return adsDetail;
     }
 }
