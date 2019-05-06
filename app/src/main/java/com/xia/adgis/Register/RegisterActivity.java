@@ -425,6 +425,7 @@ public class RegisterActivity extends AppCompatActivity implements PopupWindow.O
                 String filePath = resultUri.getEncodedPath();
                 //获得了图片路径
                 image = Uri.decode (filePath);
+                imagePath = Uri.decode (filePath);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

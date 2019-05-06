@@ -16,6 +16,8 @@ import com.xia.adgis.Main.Bean.Messages;
 import com.xia.adgis.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -70,6 +72,7 @@ public class ADsMessageFragment extends Fragment {
                         //获取到数据，并显示在其中
                         detail.setVisibility(View.VISIBLE);
                         messageList = list;
+                        Collections.reverse(messageList);
                         adapter = new MessageAdapter(getActivity(),messageList);
                         detail.setAdapter(adapter);
                 }else {
@@ -103,6 +106,7 @@ public class ADsMessageFragment extends Fragment {
                     detail.setVisibility(View.VISIBLE);
                     messageList.clear();
                     messageList.addAll(list);
+                    Collections.reverse(messageList);
                     adapter.notifyDataSetChanged();
                 }else {
                     empty.setText(e.getMessage());
