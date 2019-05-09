@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences.Editor edit = sp.edit();
                 if(isChecked){
                     edit.putBoolean("isCheck",true);
-                    edit.commit();
+                    edit.apply();
                 }else{
                     edit.putBoolean("isCheck",false);
                     edit.commit();

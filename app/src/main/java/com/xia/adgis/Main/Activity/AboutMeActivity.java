@@ -72,7 +72,7 @@ public class AboutMeActivity extends AppCompatActivity implements View.OnClickLi
                 startSystemEmailPanel(AboutMeActivity.this,"xiatiandefeng45@gmail.com");
                 break;
             case R.id.me_telphone:
-                startSystemPhoneCallPanel(AboutMeActivity.this,"15559721960");
+                startSystemPhoneCallPanel(AboutMeActivity.this,"15559721961");
                 break;
         }
     }
